@@ -1,5 +1,8 @@
 import { Component, createSignal, Show } from 'solid-js';
 import { Room } from '../types';
+import SimpleConfigForm from './SimpleConfigForm';
+import ProConfigForm from './ProConfigForm';
+import ModelConfigForm from './ModelConfigForm';
 
 interface RoomModalProps {
   room?: Room | null;
@@ -31,13 +34,6 @@ const RoomModal: Component<RoomModalProps> = (props) => {
   const [topP, setTopP] = createSignal(props.room?.model_config?.top_p || 1.0);
   const [frequencyPenalty, setFrequencyPenalty] = createSignal(props.room?.model_config?.frequency_penalty || 0.0);
   const [presencePenalty, setPresencePenalty] = createSignal(props.room?.model_config?.presence_penalty || 0.0);
-
-  const availableModels = [
-    'gpt-4o',
-    'gpt-4o-mini',
-    'gpt-4-turbo',
-    'gpt-3.5-turbo'
-  ];
 
   const handleSave = () => {
     const roomData: Partial<Room> = {
@@ -146,187 +142,44 @@ const RoomModal: Component<RoomModalProps> = (props) => {
 
           {/* Simple Mode Fields */}
           <Show when={mode() === 'simple'}>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  キャラクター名 *
-                </label>
-                <input
-                  type="text"
-                  value={characterName()}
-                  onInput={(e) => setCharacterName(e.currentTarget.value)}
-                  placeholder="例：アシスタント"
-                  class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  背景情報
-                </label>
-                <textarea
-                  value={background()}
-                  onInput={(e) => setBackground(e.currentTarget.value)}
-                  placeholder="例：親切で知識豊富なAIアシスタント"
-                  rows="3"
-                  class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  性格
-                </label>
-                <textarea
-                  value={personality()}
-                  onInput={(e) => setPersonality(e.currentTarget.value)}
-                  placeholder="例：丁寧で分かりやすく説明する"
-                  rows="2"
-                  class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  口調
-                </label>
-                <input
-                  type="text"
-                  value={tone()}
-                  onInput={(e) => setTone(e.currentTarget.value)}
-                  placeholder="例：敬語"
-                  class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  話し方の例
-                </label>
-                <textarea
-                  value={exampleSpeech()}
-                  onInput={(e) => setExampleSpeech(e.currentTarget.value)}
-                  placeholder="例：お手伝いできることがございましたら、お気軽にお声かけください。"
-                  rows="2"
-                  class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-                />
-              </div>
-            </div>
+            <SimpleConfigForm
+              characterName={characterName()}
+              background={background()}
+              personality={personality()}
+              tone={tone()}
+              exampleSpeech={exampleSpeech()}
+              onCharacterNameChange={setCharacterName}
+              onBackgroundChange={setBackground}
+              onPersonalityChange={setPersonality}
+              onToneChange={setTone}
+              onExampleSpeechChange={setExampleSpeech}
+            />
           </Show>
 
           {/* Pro Mode Fields */}
           <Show when={mode() === 'pro'}>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                システムプロンプト *
-              </label>
-              <textarea
-                value={systemPrompt()}
-                onInput={(e) => setSystemPrompt(e.currentTarget.value)}
-                placeholder="AIの動作を定義するプロンプトを入力してください..."
-                rows="8"
-                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-              />
-            </div>
+            <ProConfigForm
+              systemPrompt={systemPrompt()}
+              onSystemPromptChange={setSystemPrompt}
+            />
           </Show>
 
           {/* Model Configuration */}
-          <div class="space-y-4">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">モデル設定</h3>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                モデル
-              </label>
-              <select
-                value={selectedModel()}
-                onInput={(e) => setSelectedModel(e.currentTarget.value)}
-                class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                {availableModels.map(model => (
-                  <option value={model}>{model}</option>
-                ))}
-              </select>
-            </div>
-
-            <Show when={mode() === 'pro'}>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Temperature ({temperature()})
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="2"
-                    step="0.1"
-                    value={temperature()}
-                    onInput={(e) => setTemperature(parseFloat(e.currentTarget.value))}
-                    class="w-full"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Max Tokens
-                  </label>
-                  <input
-                    type="number"
-                    value={maxTokens()}
-                    onInput={(e) => setMaxTokens(parseInt(e.currentTarget.value))}
-                    min="1"
-                    max="4000"
-                    class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Top P ({topP()})
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={topP()}
-                    onInput={(e) => setTopP(parseFloat(e.currentTarget.value))}
-                    class="w-full"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Frequency Penalty ({frequencyPenalty()})
-                  </label>
-                  <input
-                    type="range"
-                    min="-2"
-                    max="2"
-                    step="0.1"
-                    value={frequencyPenalty()}
-                    onInput={(e) => setFrequencyPenalty(parseFloat(e.currentTarget.value))}
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Presence Penalty ({presencePenalty()})
-                  </label>
-                  <input
-                    type="range"
-                    min="-2"
-                    max="2"
-                    step="0.1"
-                    value={presencePenalty()}
-                    onInput={(e) => setPresencePenalty(parseFloat(e.currentTarget.value))}
-                    class="w-full"
-                  />
-                </div>
-              </div>
-            </Show>
-          </div>
+          <ModelConfigForm
+            selectedModel={selectedModel()}
+            temperature={temperature()}
+            maxTokens={maxTokens()}
+            topP={topP()}
+            frequencyPenalty={frequencyPenalty()}
+            presencePenalty={presencePenalty()}
+            showAdvanced={mode() === 'pro'}
+            onSelectedModelChange={setSelectedModel}
+            onTemperatureChange={setTemperature}
+            onMaxTokensChange={setMaxTokens}
+            onTopPChange={setTopP}
+            onFrequencyPenaltyChange={setFrequencyPenalty}
+            onPresencePenaltyChange={setPresencePenalty}
+          />
         </div>
 
         {/* Footer */}
