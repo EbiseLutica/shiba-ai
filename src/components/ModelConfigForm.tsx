@@ -1,5 +1,6 @@
 import { Component, Show } from 'solid-js';
-import { Select, Input } from './ui';
+import { Input } from './ui';
+import ModelSelector from './ModelSelector';
 
 interface ModelConfigFormProps {
   selectedModel: string;
@@ -18,30 +19,16 @@ interface ModelConfigFormProps {
 }
 
 const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
-  const availableModels = [
-    'gpt-4o',
-    'gpt-4o-mini',
-    'gpt-4-turbo',
-    'gpt-3.5-turbo'
-  ];
-
   return (
     <div class="space-y-4">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">モデル設定</h3>
       
-      <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          モデル
-        </label>
-        <Select
-          value={props.selectedModel}
-          onInput={(e) => props.onSelectedModelChange(e.currentTarget.value)}
-        >
-          {availableModels.map(model => (
-            <option value={model}>{model}</option>
-          ))}
-        </Select>
-      </div>
+      <ModelSelector
+        value={props.selectedModel}
+        onInput={props.onSelectedModelChange}
+        label="モデル"
+        showRefreshButton={true}
+      />
 
       <Show when={props.showAdvanced}>
         <div class="grid grid-cols-2 gap-4">

@@ -7,6 +7,7 @@ interface MessageInputProps {
   onSendMessage: () => void;
   isLoading: boolean;
   disabled: boolean;
+  isWaitingForResponse?: boolean;
 }
 
 const MessageInput: Component<MessageInputProps> = (props) => {
@@ -25,7 +26,12 @@ const MessageInput: Component<MessageInputProps> = (props) => {
             value={props.messageInput}
             onInput={(e) => props.onMessageInputChange(e.currentTarget.value)}
             onKeyPress={handleKeyPress}
-            placeholder="メッセージを入力... (Shift+Enterで改行、Enterで送信)"
+            placeholder={
+              props.isWaitingForResponse 
+                ? "返信を待っています..." 
+                : "メッセージを入力... (Shift+Enterで改行、Enterで送信)"
+            }
+            disabled={props.isWaitingForResponse ?? false}
             rows="1"
             style="min-height: 48px; max-height: 120px;"
           />
@@ -33,12 +39,12 @@ const MessageInput: Component<MessageInputProps> = (props) => {
         <div class="flex">
           <Button
             onClick={props.onSendMessage}
-            disabled={props.disabled || props.isLoading}
+            disabled={props.disabled || props.isLoading || (props.isWaitingForResponse ?? false)}
             size="icon"
-            loading={props.isLoading}
+            loading={props.isLoading || (props.isWaitingForResponse ?? false)}
             style="height: 48px; width: 48px;"
           >
-            <Show when={!props.isLoading}>
+            <Show when={!props.isLoading && !(props.isWaitingForResponse ?? false)}>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>

@@ -11,7 +11,9 @@ interface ChatAreaProps {
   onDeleteMessage: (messageId: string) => void;
   onRegenerateMessage: (messageId: string) => void;
   onToggleMobileSidebar: () => void;
+  onEditRoom?: () => void;
   isMobile: boolean;
+  isWaitingForResponse?: boolean;
 }
 
 const ChatArea: Component<ChatAreaProps> = (props) => {
@@ -20,7 +22,7 @@ const ChatArea: Component<ChatAreaProps> = (props) => {
 
   const handleSendMessage = () => {
     const content = messageInput().trim();
-    if (!content || isLoading()) return;
+    if (!content || isLoading() || (props.isWaitingForResponse ?? false)) return;
 
     props.onSendMessage(content);
     setMessageInput('');
@@ -31,6 +33,7 @@ const ChatArea: Component<ChatAreaProps> = (props) => {
       <ChatHeader
         room={props.room}
         onToggleMobileSidebar={props.onToggleMobileSidebar}
+        onEditRoom={props.onEditRoom}
         isMobile={props.isMobile}
       />
 
@@ -48,7 +51,8 @@ const ChatArea: Component<ChatAreaProps> = (props) => {
           onMessageInputChange={setMessageInput}
           onSendMessage={handleSendMessage}
           isLoading={isLoading()}
-          disabled={!messageInput().trim()}
+          disabled={!messageInput().trim() || (props.isWaitingForResponse ?? false)}
+          isWaitingForResponse={props.isWaitingForResponse}
         />
       </Show>
     </div>

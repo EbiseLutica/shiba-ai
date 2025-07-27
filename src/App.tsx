@@ -1,29 +1,25 @@
-import { createSignal, createMemo, Component } from 'solid-js';
+import { createSignal, createMemo, Component, onMount, createEffect } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
-import { Room, AppSettings } from './types';
+import { Room, AppSettings, Message } from './types';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import RoomModal from './components/RoomModal';
 import UIShowcase from './components/UIShowcase';
+import { roomStorage, settingsStorage } from './utils/storage';
+import { createOpenAIClient, generateChatResponse } from './utils/openai';
 
 const App: Component = () => {
-  // State management
-  const [rooms, setRooms] = createSignal<Room[]>([]);
-  const [currentRoomId, setCurrentRoomId] = createSignal<string | null>(null);
-  const [settings, setSettings] = createSignal<AppSettings>({
-    api_key: '',
-    theme: 'auto',
-    default_model: 'gpt-4o',
-    ui_preferences: {
-      sidebar_collapsed: false
-    }
-  });
+  // State management - LocalStorageから初期データを読み込み
+  const [rooms, setRooms] = createSignal<Room[]>(roomStorage.getRooms());
+  const [currentRoomId, setCurrentRoomId] = createSignal<string | null>(roomStorage.getCurrentRoomId());
+  const [settings, setSettings] = createSignal<AppSettings>(settingsStorage.getSettings());
   const [showSettings, setShowSettings] = createSignal(false);
   const [isMobile, setIsMobile] = createSignal(false);
   const [showMobileSidebar, setShowMobileSidebar] = createSignal(false);
   const [showRoomModal, setShowRoomModal] = createSignal(false);
   const [editingRoom, setEditingRoom] = createSignal<Room | null>(null);
+  const [isWaitingForResponse, setIsWaitingForResponse] = createSignal(false);
 
   // Current room計算
   const currentRoom = createMemo(() => {
@@ -31,17 +27,37 @@ const App: Component = () => {
     return id ? rooms().find(room => room.id === id) : null;
   });
 
+  // データの自動保存エフェクト
+  createEffect(() => {
+    // ルームデータが変更されたらLocalStorageに保存
+    roomStorage.saveRooms(rooms());
+  });
+
+  createEffect(() => {
+    // 現在のルームIDが変更されたらLocalStorageに保存
+    roomStorage.saveCurrentRoomId(currentRoomId());
+  });
+
+  createEffect(() => {
+    // 設定が変更されたらLocalStorageに保存
+    settingsStorage.saveSettings(settings());
+  });
+
   // モバイル判定
   const checkMobile = () => {
     setIsMobile(window.innerWidth < 768);
   };
 
-  // 初期化時とリサイズ時にモバイル判定
-  checkMobile();
-  window.addEventListener('resize', checkMobile);
-
-  // 初期化（空の状態から開始）
-  // ルームと現在のルームIDは空の状態で開始
+  // 初期化
+  onMount(() => {
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    // クリーンアップ
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  });
 
   const handleRoomSelect = (roomId: string) => {
     setCurrentRoomId(roomId);
@@ -58,6 +74,13 @@ const App: Component = () => {
   const handleEditRoom = (room: Room) => {
     setEditingRoom(room);
     setShowRoomModal(true);
+  };
+
+  const handleEditCurrentRoom = () => {
+    const room = currentRoom();
+    if (room) {
+      handleEditRoom(room);
+    }
   };
 
   const handleRoomSave = (roomData: Partial<Room>) => {
@@ -83,6 +106,96 @@ const App: Component = () => {
     }
     setShowRoomModal(false);
     setEditingRoom(null);
+  };
+
+  // メッセージ送信処理
+  const handleSendMessage = async (content: string) => {
+    const room = currentRoom();
+    const currentSettings = settings();
+    
+    if (!room || !content.trim() || isWaitingForResponse()) return;
+
+    // APIキーのチェック
+    if (!currentSettings.api_key) {
+      // APIキーが設定されていない場合は設定モーダルを開く
+      setShowSettings(true);
+      return;
+    }
+
+    // 待機状態を開始
+    setIsWaitingForResponse(true);
+
+    // ユーザーメッセージを追加
+    const userMessage: Message = {
+      id: uuidv4(),
+      role: 'user',
+      content: content.trim(),
+      timestamp: Date.now()
+    };
+
+    // ルームにユーザーメッセージを追加
+    setRooms(prev => prev.map(r => 
+      r.id === room.id 
+        ? { 
+            ...r, 
+            messages: [...r.messages, userMessage],
+            updated_at: Date.now()
+          }
+        : r
+    ));
+
+    try {
+      // OpenAI APIクライアントを作成
+      const client = createOpenAIClient(currentSettings.api_key);
+      
+      // 現在のメッセージ履歴を取得（新しく追加したユーザーメッセージを含む）
+      const updatedRoom = rooms().find(r => r.id === room.id);
+      const allMessages = updatedRoom?.messages || [];
+      
+      // OpenAI APIでAIの返答を生成
+      const aiResponse = await generateChatResponse(client, room, allMessages);
+      
+      // AIメッセージを追加
+      const aiMessage: Message = {
+        id: uuidv4(),
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: Date.now()
+      };
+
+      setRooms(prev => prev.map(r => 
+        r.id === room.id 
+          ? { 
+              ...r, 
+              messages: [...r.messages, aiMessage],
+              updated_at: Date.now()
+            }
+          : r
+      ));
+    } catch (error) {
+      console.error('Failed to generate AI response:', error);
+      
+      // エラー時はエラーメッセージをAIの応答として表示
+      const errorMessage: Message = {
+        id: uuidv4(),
+        role: 'assistant',
+        content: 'エラーが発生しました。APIキーや設定を確認してください。',
+        timestamp: Date.now()
+      };
+
+      setRooms(prev => prev.map(r => 
+        r.id === room.id 
+          ? { 
+              ...r, 
+              messages: [...r.messages, errorMessage],
+              updated_at: Date.now()
+            }
+          : r
+      ));
+    } finally {
+      // 待機状態を終了
+      setIsWaitingForResponse(false);
+    }
   };
 
   return (
@@ -133,13 +246,14 @@ const App: Component = () => {
       <div class="flex-1 flex flex-col min-w-0">
         <ChatArea
           room={currentRoom() || null}
-          onSendMessage={(content) => console.log('メッセージ送信:', content)}
+          onSendMessage={handleSendMessage}
           onEditMessage={(messageId, content) => console.log('メッセージ編集:', messageId, content)}
           onDeleteMessage={(messageId) => console.log('メッセージ削除:', messageId)}
           onRegenerateMessage={(messageId) => console.log('メッセージ再生成:', messageId)}
           onToggleMobileSidebar={() => setShowMobileSidebar(!showMobileSidebar())}
-          onEditRoom={handleEditRoom}
+          onEditRoom={handleEditCurrentRoom}
           isMobile={isMobile()}
+          isWaitingForResponse={isWaitingForResponse()}
         />
       </div>
 

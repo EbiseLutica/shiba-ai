@@ -1,6 +1,8 @@
-import { Component, createSignal, Show } from 'solid-js';
+import { Component, createSignal, Show, createMemo } from 'solid-js';
 import { AppSettings } from '../types';
 import { Select, Button } from './ui';
+import { getStorageUsage, formatBytes, getStorageUsagePercentage, checkStorageQuota, exportData, importData } from '../utils/storage';
+import ModelSelector from './ModelSelector';
 
 interface SettingsModalProps {
   settings: AppSettings;
@@ -14,21 +16,71 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
   const [defaultModel, setDefaultModel] = createSignal(props.settings.default_model);
   const [showApiKey, setShowApiKey] = createSignal(false);
 
-  const availableModels = [
-    'gpt-4o',
-    'gpt-4o-mini',
-    'gpt-4-turbo',
-    'gpt-3.5-turbo'
-  ];
+  // ストレージ使用量の計算
+  const storageInfo = createMemo(() => {
+    const { used, total } = getStorageUsage();
+    const percentage = getStorageUsagePercentage();
+    const quota = checkStorageQuota();
+    
+    return {
+      used,
+      total,
+      percentage,
+      formattedUsed: formatBytes(used),
+      formattedTotal: formatBytes(total),
+      isNearLimit: quota.isNearLimit,
+      isOverLimit: quota.isOverLimit
+    };
+  });
 
   const handleSave = () => {
-    const newSettings: AppSettings = {
-      ...props.settings,
+    props.onSave({
       api_key: apiKey(),
       theme: theme(),
-      default_model: defaultModel()
+      default_model: defaultModel(),
+      ui_preferences: props.settings.ui_preferences
+    });
+  };
+
+  const handleExport = () => {
+    const data = exportData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chappy-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target?.result as string);
+            const success = importData(data);
+            if (success) {
+              alert('データのインポートが完了しました。ページを再読み込みしてください。');
+              window.location.reload();
+            } else {
+              alert('データのインポートに失敗しました。');
+            }
+          } catch (error) {
+            alert('無効なファイル形式です。');
+          }
+        };
+        reader.readAsText(file);
+      }
     };
-    props.onSave(newSettings);
+    input.click();
   };
 
   const handleOverlayClick = (e: MouseEvent) => {
@@ -109,55 +161,72 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
           </div>
 
           {/* Default Model */}
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              デフォルトモデル
-            </label>
-            <Select
-              value={defaultModel()}
-              onInput={(e) => setDefaultModel(e.currentTarget.value)}
-            >
-              {availableModels.map(model => (
-                <option value={model}>{model}</option>
-              ))}
-            </Select>
-          </div>
+          <ModelSelector
+            value={defaultModel()}
+            onInput={setDefaultModel}
+            label="デフォルトモデル"
+            showRefreshButton={true}
+          />
 
           {/* Storage Info */}
           <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
             <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               ストレージ情報
             </h3>
-            <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
               <div class="flex justify-between">
                 <span>使用量:</span>
-                <span>約 2.1 MB / 5 MB</span>
+                <span>{storageInfo().formattedUsed} / {storageInfo().formattedTotal}</span>
               </div>
               <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                <div class="bg-blue-600 h-2 rounded-full" style="width: 42%"></div>
+                <div 
+                  class={`h-2 rounded-full transition-all duration-300 ${
+                    storageInfo().isOverLimit 
+                      ? 'bg-red-600' 
+                      : storageInfo().isNearLimit 
+                        ? 'bg-yellow-600' 
+                        : 'bg-blue-600'
+                  }`}
+                  style={`width: ${storageInfo().percentage}%`}
+                />
+              </div>
+              <div class="flex justify-between text-xs">
+                <span>{storageInfo().percentage}% 使用中</span>
+                <Show when={storageInfo().isNearLimit}>
+                  <span class={storageInfo().isOverLimit ? 'text-red-500' : 'text-yellow-500'}>
+                    {storageInfo().isOverLimit ? '容量制限に達しています' : '容量制限に近づいています'}
+                  </span>
+                </Show>
               </div>
             </div>
           </div>
 
           {/* Export/Import */}
-          <div class="space-y-3">
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              データ管理
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              データの管理
             </h3>
             <div class="flex gap-3">
-              <button
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                onClick={() => console.log('エクスポート')}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                class="flex-1"
               >
                 エクスポート
-              </button>
-              <button
-                class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                onClick={() => console.log('インポート')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleImport}
+                class="flex-1"
               >
                 インポート
-              </button>
+              </Button>
             </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              エクスポートにはAPIキーは含まれません
+            </p>
           </div>
         </div>
 

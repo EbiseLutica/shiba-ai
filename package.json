@@ -20,6 +20,7 @@
 	"dependencies": {
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"openai": "^5.10.2",
 		"solid-js": "^1.9.7",
 		"uuid": "^10.0.0"
 	}

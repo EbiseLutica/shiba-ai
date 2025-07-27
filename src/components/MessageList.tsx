@@ -1,4 +1,4 @@
-import { Component, For, Show } from 'solid-js';
+import { Component, For, Show, createEffect, onMount } from 'solid-js';
 import { Room } from '../types';
 import MessageItem from './MessageItem';
 
@@ -11,8 +11,55 @@ interface MessageListProps {
 }
 
 const MessageList: Component<MessageListProps> = (props) => {
+  let scrollContainer: HTMLDivElement | undefined;
+  let wasAtBottom = true; // 初期状態では最下部にいると仮定
+
+  // 最下部までスクロールしているかチェック
+  const isAtBottom = () => {
+    if (!scrollContainer) return false;
+    const threshold = 50; // 50px の余裕を持たせる
+    return scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight <= threshold;
+  };
+
+  // 最下部にスクロール
+  const scrollToBottom = () => {
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+  };
+
+  // スクロール位置を監視
+  const handleScroll = () => {
+    wasAtBottom = isAtBottom();
+  };
+
+  // メッセージの数が変更されたときの処理
+  createEffect(() => {
+    const room = props.room;
+    if (room && room.messages.length > 0) {
+      // 最下部にいた場合のみ自動スクロール
+      if (wasAtBottom) {
+        setTimeout(() => {
+          scrollToBottom();
+        }, 10);
+      }
+    }
+  });
+
+  // 初回読み込み時に最下部にスクロール
+  onMount(() => {
+    setTimeout(() => {
+      scrollToBottom();
+      wasAtBottom = true;
+    }, 100);
+  });
+
   return (
-    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+    <div 
+      ref={scrollContainer}
+      onScroll={handleScroll}
+      class="flex-1 overflow-y-auto p-4 space-y-4"
+    >
       <Show when={props.room} fallback={
         <div class="h-full flex items-center justify-center">
           <div class="text-center text-gray-500 dark:text-gray-400">
