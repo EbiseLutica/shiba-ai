@@ -18,6 +18,8 @@
 		"vite-plugin-solid": "^2.11.7"
 	},
 	"dependencies": {
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
 		"solid-js": "^1.9.7",
 		"uuid": "^10.0.0"
 	}

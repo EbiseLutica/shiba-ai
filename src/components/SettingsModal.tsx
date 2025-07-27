@@ -1,5 +1,6 @@
 import { Component, createSignal, Show } from 'solid-js';
 import { AppSettings } from '../types';
+import { Select, Button } from './ui';
 
 interface SettingsModalProps {
   settings: AppSettings;
@@ -97,15 +98,14 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               テーマ
             </label>
-            <select
+            <Select
               value={theme()}
               onInput={(e) => setTheme(e.currentTarget.value as 'auto' | 'light' | 'dark')}
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="auto">自動（システム設定に従う）</option>
               <option value="light">ライト</option>
               <option value="dark">ダーク</option>
-            </select>
+            </Select>
           </div>
 
           {/* Default Model */}
@@ -113,15 +113,14 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               デフォルトモデル
             </label>
-            <select
+            <Select
               value={defaultModel()}
               onInput={(e) => setDefaultModel(e.currentTarget.value)}
-              class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               {availableModels.map(model => (
                 <option value={model}>{model}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           {/* Storage Info */}
@@ -164,18 +163,20 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
 
         {/* Footer */}
         <div class="flex gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
-          <button
+          <Button
             onClick={props.onClose}
-            class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            variant="secondary"
+            class="flex-1"
           >
             キャンセル
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
-            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            variant="primary"
+            class="flex-1"
           >
             保存
-          </button>
+          </Button>
         </div>
       </div>
     </div>

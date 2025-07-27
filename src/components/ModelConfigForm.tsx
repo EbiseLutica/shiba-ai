@@ -1,4 +1,5 @@
 import { Component, Show } from 'solid-js';
+import { Select, Input } from './ui';
 
 interface ModelConfigFormProps {
   selectedModel: string;
@@ -32,15 +33,14 @@ const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           モデル
         </label>
-        <select
+        <Select
           value={props.selectedModel}
           onInput={(e) => props.onSelectedModelChange(e.currentTarget.value)}
-          class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           {availableModels.map(model => (
             <option value={model}>{model}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <Show when={props.showAdvanced}>
@@ -64,13 +64,13 @@ const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Max Tokens
             </label>
-            <input
+            <Input
               type="number"
               value={props.maxTokens}
               onInput={(e) => props.onMaxTokensChange(parseInt(e.currentTarget.value))}
               min="1"
               max="4000"
-              class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              size="sm"
             />
           </div>
 

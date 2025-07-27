@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import RoomModal from './components/RoomModal';
+import UIShowcase from './components/UIShowcase';
 
 const App: Component = () => {
   // State management
