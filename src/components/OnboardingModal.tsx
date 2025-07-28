@@ -223,9 +223,11 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
 
           <RoomEditForm
             room={null}
-            onSave={(roomData) => setRoomFormData(roomData)}
-            onCancel={() => {}}
-            showCancelButton={false}
+            onSave={(roomData) => {
+                setRoomFormData(roomData);
+                handleNext();
+            }}
+            onCancel={handleBack}
           />
         </div>
       </Show>
