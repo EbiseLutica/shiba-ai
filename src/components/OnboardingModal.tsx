@@ -3,10 +3,11 @@ import { Button, Input, OnboardingModal as OnboardingModalBase } from './ui';
 import RoomEditForm from './RoomEditForm';
 import { Room } from '../types';
 import OpenAIApiKeyGuideCard from './OpenAIApiKeyGuideCard';
-import { DEFAULT_SETTINGS, settingsStorage } from '../utils/storage';
+import { DEFAULT_SETTINGS, settingsStorage, importData } from '../utils/storage';
 
 interface OnboardingModalProps {
   onComplete: (apiKey: string, room: Room) => void;
+  onImportComplete: () => void;
   isOpen: boolean;
 }
 
@@ -17,6 +18,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
   const [agreedToNotices, setAgreedToNotices] = createSignal(false);
   const [apiKey, setApiKey] = createSignal('');
   const [roomFormData, setRoomFormData] = createSignal<Partial<Room> | null>(null);
+  const [showImportOption, setShowImportOption] = createSignal(false);
 
   const stepNumber = createMemo(() => {
     const steps: OnboardingStep[] = ['welcome', 'notices', 'api-key', 'room-creation', 'complete'];
@@ -31,6 +33,34 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
   const canProceedFromNotices = createMemo(() => agreedToNotices());
   const canProceedFromApiKey = createMemo(() => isApiKeyValid());
   const canProceedFromRoomCreation = createMemo(() => roomFormData() !== null);
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target?.result as string);
+            const success = importData(data);
+            if (success) {
+              alert('データのインポートが完了しました。');
+              props.onImportComplete();
+            } else {
+              alert('データのインポートに失敗しました。');
+            }
+          } catch (error) {
+            alert('無効なファイル形式です。');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
 
   const handleNext = () => {
     const current = currentStep();
@@ -107,7 +137,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
   const onboardingContent = (
     <>
       <Show when={currentStep() === 'welcome'}>
-        <div class="text-center space-y-4">
+        <div class="text-center space-y-6">
           <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
             Shiba AIへようこそ！
           </h3>
@@ -115,9 +145,33 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
             このアプリでは、OpenAI APIを用いて、<br />
             あなただけのAIキャラクターとチャットを楽しむことができます。
           </p>
-          <p class="text-gray-600 dark:text-gray-300">
-            まず、簡単な設定を行いましょう。
-          </p>
+          
+          <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+              始める前に
+            </h4>
+            <div class="space-y-3">
+              <div class="flex flex-col gap-3">
+                <Button
+                  onClick={handleNext}
+                  variant="primary"
+                  class="w-full"
+                >
+                  新規セットアップを開始
+                </Button>
+                <Button
+                  onClick={handleImport}
+                  variant="outline"
+                  class="w-full"
+                >
+                  既存データをインポート
+                </Button>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">
+                以前にエクスポートしたデータがある場合は、インポートして設定を復元できます
+              </p>
+            </div>
+          </div>
         </div>
       </Show>
 
@@ -270,16 +324,11 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
   );
 
   const footerContent = (
-    <Show when={currentStep() !== 'room-creation'}>
+    <Show when={currentStep() !== 'room-creation' && currentStep() !== 'welcome'}>
       <div class="flex justify-between">
-        <Show when={currentStep() !== 'welcome'}>
-          <Button variant="outline" onClick={handleBack}>
-            戻る
-          </Button>
-        </Show>
-        <Show when={currentStep() === 'welcome'}>
-          <div />
-        </Show>
+        <Button variant="outline" onClick={handleBack}>
+          戻る
+        </Button>
         
         <Button
           onClick={handleNext}

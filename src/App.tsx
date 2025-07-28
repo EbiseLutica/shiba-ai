@@ -160,6 +160,12 @@ const App: Component = () => {
     setShowOnboarding(false);
   };
 
+  // インポート完了処理
+  const handleImportComplete = () => {
+    // データがインポートされたので、ページを再読み込みして最新データを反映
+    window.location.reload();
+  };
+
   const handleRoomSave = (roomData: Partial<Room>) => {
     if (editingRoom()) {
       // Edit existing room
@@ -500,6 +506,7 @@ const App: Component = () => {
       <OnboardingModal
         isOpen={showOnboarding()}
         onComplete={handleOnboardingComplete}
+        onImportComplete={handleImportComplete}
       />
     </div>
   );
