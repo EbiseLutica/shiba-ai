@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* iOS対応 */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root {
+  height: 100dvh;
+  overflow: hidden;
+}
+
 .chat-body {
     line-height: 1.5;
 }

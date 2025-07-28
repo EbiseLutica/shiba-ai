@@ -190,7 +190,7 @@ const SearchModal: Component<SearchModalProps> = (props) => {
       onClose={props.onClose}
       title="検索"
       maxWidth="max-w-2xl"
-      maxHeight="max-h-[80vh]"
+      maxHeight="max-h-[80dvh]"
       closeOnBackdropClick={true}
       showCloseButton={true}
       footerContent={footerContent}

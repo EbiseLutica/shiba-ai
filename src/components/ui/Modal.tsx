@@ -13,7 +13,7 @@ export interface ModalProps {
   showCloseButton?: boolean;
   /** モーダルの最大幅（デフォルト: 'max-w-md'） */
   maxWidth?: 'max-w-xs' | 'max-w-sm' | 'max-w-md' | 'max-w-lg' | 'max-w-xl' | 'max-w-2xl' | 'max-w-3xl' | 'max-w-4xl' | 'max-w-5xl' | 'max-w-6xl' | 'max-w-7xl' | 'max-w-full';
-  /** モーダルの最大高さ（デフォルト: 'max-h-[90vh]'） */
+  /** モーダルの最大高さ（デフォルト: 'max-h-[90dvh]'） */
   maxHeight?: string;
   /** 子コンポーネント */
   children: JSX.Element;
@@ -91,7 +91,7 @@ const Modal: Component<ModalProps> = (props) => {
         }
       >
         <div 
-          class={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl ${props.maxWidth || 'max-w-md'} w-full ${props.maxHeight || 'max-h-[90vh]'} overflow-y-auto ${props.class || ''}`}
+          class={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl ${props.maxWidth || 'max-w-md'} w-full ${props.maxHeight || 'max-h-[90dvh]'} overflow-y-auto ${props.class || ''}`}
           onClick={(e) => e.stopPropagation()}
           style={
             animated() 

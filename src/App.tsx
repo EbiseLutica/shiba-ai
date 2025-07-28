@@ -408,7 +408,7 @@ const App: Component = () => {
   };
 
   return (
-    <div class="h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex overflow-hidden">
+    <div class="h-dvh bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex overflow-hidden">
       {/* Desktop Sidebar */}
       <div class={`${isMobile() ? 'hidden' : 'flex'} ${settings().ui_preferences.sidebar_collapsed ? 'w-16' : 'w-96'} transition-all duration-300`}>
         <Sidebar
