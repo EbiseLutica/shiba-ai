@@ -52,7 +52,7 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `chappy-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `shiba-ai-export-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
