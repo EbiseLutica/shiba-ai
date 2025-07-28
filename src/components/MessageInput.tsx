@@ -1,5 +1,5 @@
 import { Component, Show, createEffect } from 'solid-js';
-import { Button, Textarea } from './ui';
+import { Button, AutoResizeTextarea } from './ui';
 
 interface MessageInputProps {
   messageInput: string;
@@ -33,10 +33,10 @@ const MessageInput: Component<MessageInputProps> = (props) => {
     <div class="flex-shrink-0 p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
       <div class="flex gap-3">
         <div class="flex-1">
-          <Textarea
+          <AutoResizeTextarea
             ref={textareaRef}
             value={props.messageInput}
-            onInput={(e) => props.onMessageInputChange(e.currentTarget.value)}
+            onInput={(e: any) => props.onMessageInputChange(e.currentTarget.value)}
             onKeyPress={handleKeyPress}
             placeholder={
               props.isWaitingForResponse 
@@ -44,8 +44,8 @@ const MessageInput: Component<MessageInputProps> = (props) => {
                 : "メッセージを入力... (Shift+Enterで改行、Enterで送信)"
             }
             disabled={props.isWaitingForResponse ?? false}
-            rows="1"
-            style="min-height: 48px; max-height: 120px;"
+            minRows={1}
+            maxRows={5}
           />
         </div>
         <div class="flex">

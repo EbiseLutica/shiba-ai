@@ -1,5 +1,6 @@
 import { Component, Show, createSignal } from 'solid-js';
 import { Message } from '../types';
+import { AutoResizeTextarea } from './ui';
 
 interface MessageItemProps {
   message: Message;
@@ -97,12 +98,13 @@ const MessageItem: Component<MessageItemProps> = (props) => {
           <div class="mb-2 text-sm text-gray-600 dark:text-gray-400">
             メッセージを編集中...
           </div>
-          <textarea
+          <AutoResizeTextarea
             value={editingContent()}
-            onInput={(e) => setEditingContent(e.currentTarget.value)}
-            class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded p-3 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows="4"
+            onInput={(e: any) => setEditingContent(e.currentTarget.value)}
+            class="w-full"
             placeholder="メッセージを編集してください..."
+            minRows={2}
+            maxRows={10}
           />
           <div class="flex gap-2 mt-3">
             <button

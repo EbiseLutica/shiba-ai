@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import { Input, Textarea } from './ui';
+import { Input, AutoResizeTextarea } from './ui';
 
 interface SimpleConfigFormProps {
   characterName: string;
@@ -33,11 +33,12 @@ const SimpleConfigForm: Component<SimpleConfigFormProps> = (props) => {
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           背景情報
         </label>
-        <Textarea
+        <AutoResizeTextarea
           value={props.background}
-          onInput={(e) => props.onBackgroundChange(e.currentTarget.value)}
+          onInput={(e: any) => props.onBackgroundChange(e.currentTarget.value)}
           placeholder="例：親切で知識豊富なAIアシスタント"
-          rows="3"
+          minRows={2}
+          maxRows={6}
         />
       </div>
 
@@ -45,11 +46,12 @@ const SimpleConfigForm: Component<SimpleConfigFormProps> = (props) => {
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           性格
         </label>
-        <Textarea
+        <AutoResizeTextarea
           value={props.personality}
-          onInput={(e) => props.onPersonalityChange(e.currentTarget.value)}
+          onInput={(e: any) => props.onPersonalityChange(e.currentTarget.value)}
           placeholder="例：丁寧で分かりやすく説明する"
-          rows="2"
+          minRows={2}
+          maxRows={5}
         />
       </div>
 
@@ -69,11 +71,12 @@ const SimpleConfigForm: Component<SimpleConfigFormProps> = (props) => {
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           話し方の例
         </label>
-        <Textarea
+        <AutoResizeTextarea
           value={props.exampleSpeech}
-          onInput={(e) => props.onExampleSpeechChange(e.currentTarget.value)}
+          onInput={(e: any) => props.onExampleSpeechChange(e.currentTarget.value)}
           placeholder="例：お手伝いできることがございましたら、お気軽にお声かけください。"
-          rows="2"
+          minRows={2}
+          maxRows={5}
         />
       </div>
     </div>
