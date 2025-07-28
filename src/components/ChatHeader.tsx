@@ -33,9 +33,24 @@ const ChatHeader: Component<ChatHeaderProps> = (props) => {
         }>
           {(room) => (
             <div class="flex-1">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                {room().name}
-              </h2>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                  {room().name}
+                </h2>
+                <Show when={props.onEditRoom}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={props.onEditRoom}
+                    title="ルームを編集"
+                    class="p-1 min-w-[32px] min-h-[32px] text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </Button>
+                </Show>
+              </div>
               <div class="flex items-center gap-2 mt-1">
                 <span class="text-xs text-gray-500 dark:text-gray-400">
                   {room().model_config.model}
@@ -46,20 +61,6 @@ const ChatHeader: Component<ChatHeaderProps> = (props) => {
         </Show>
 
         <div class="flex items-center gap-2">
-          <Show when={props.room && props.onEditRoom}>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={props.onEditRoom}
-              title="ルームを編集"
-              class={props.isMobile ? "min-w-[44px] min-h-[44px]" : ""}
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </Button>
-          </Show>
-
           <Button
             variant="ghost"
             size="icon"
