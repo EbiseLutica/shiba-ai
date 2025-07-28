@@ -1,4 +1,4 @@
-import { Component, Show } from 'solid-js';
+import { Component, Show, createEffect } from 'solid-js';
 import { Button, Textarea } from './ui';
 
 interface MessageInputProps {
@@ -11,6 +11,8 @@ interface MessageInputProps {
 }
 
 const MessageInput: Component<MessageInputProps> = (props) => {
+  let textareaRef: HTMLTextAreaElement | undefined;
+
   const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -18,11 +20,21 @@ const MessageInput: Component<MessageInputProps> = (props) => {
     }
   };
 
+  // isWaitingForResponseがfalseになったときにフォーカス
+  createEffect(() => {
+    if (props.isWaitingForResponse === false && textareaRef) {
+      setTimeout(() => {
+        textareaRef?.focus();
+      }, 100); // 少し遅延を入れてDOM更新を待つ
+    }
+  });
+
   return (
     <div class="flex-shrink-0 p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
       <div class="flex gap-3">
         <div class="flex-1">
           <Textarea
+            ref={textareaRef}
             value={props.messageInput}
             onInput={(e) => props.onMessageInputChange(e.currentTarget.value)}
             onKeyPress={handleKeyPress}

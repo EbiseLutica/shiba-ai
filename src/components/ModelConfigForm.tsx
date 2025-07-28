@@ -31,81 +31,89 @@ const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
       />
 
       <Show when={props.showAdvanced}>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Temperature ({props.temperature})
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.1"
-              value={props.temperature}
-              onInput={(e) => props.onTemperatureChange(parseFloat(e.currentTarget.value))}
-              class="w-full"
-            />
-          </div>
+        <details class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+          <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
+            高度な設定
+          </summary>
+          <small class="text-xs text-gray-500 dark:text-gray-400">
+            各パラメータの意味がわからない場合は、そのままにしておいてください。
+          </small>
+          <div class="grid grid-cols-2 mt-4 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Temperature ({props.temperature})
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                value={props.temperature}
+                onInput={(e) => props.onTemperatureChange(parseFloat(e.currentTarget.value))}
+                class="w-full"
+              />
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Max Tokens
-            </label>
-            <Input
-              type="number"
-              value={props.maxTokens}
-              onInput={(e) => props.onMaxTokensChange(parseInt(e.currentTarget.value))}
-              min="1"
-              max="4000"
-              size="sm"
-            />
-          </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Max Tokens
+              </label>
+              <Input
+                type="number"
+                value={props.maxTokens}
+                onInput={(e) => props.onMaxTokensChange(parseInt(e.currentTarget.value))}
+                min="1"
+                max="4000"
+                size="sm"
+              />
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Top P ({props.topP})
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={props.topP}
-              onInput={(e) => props.onTopPChange(parseFloat(e.currentTarget.value))}
-              class="w-full"
-            />
-          </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Top P ({props.topP})
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={props.topP}
+                onInput={(e) => props.onTopPChange(parseFloat(e.currentTarget.value))}
+                class="w-full"
+              />
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Frequency Penalty ({props.frequencyPenalty})
-            </label>
-            <input
-              type="range"
-              min="-2"
-              max="2"
-              step="0.1"
-              value={props.frequencyPenalty}
-              onInput={(e) => props.onFrequencyPenaltyChange(parseFloat(e.currentTarget.value))}
-              class="w-full"
-            />
-          </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Frequency Penalty ({props.frequencyPenalty})
+              </label>
+              <input
+                type="range"
+                min="-2"
+                max="2"
+                step="0.1"
+                value={props.frequencyPenalty}
+                onInput={(e) => props.onFrequencyPenaltyChange(parseFloat(e.currentTarget.value))}
+                class="w-full"
+              />
+            </div>
 
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Presence Penalty ({props.presencePenalty})
-            </label>
-            <input
-              type="range"
-              min="-2"
-              max="2"
-              step="0.1"
-              value={props.presencePenalty}
-              onInput={(e) => props.onPresencePenaltyChange(parseFloat(e.currentTarget.value))}
-              class="w-full"
-            />
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Presence Penalty ({props.presencePenalty})
+              </label>
+              <input
+                type="range"
+                min="-2"
+                max="2"
+                step="0.1"
+                value={props.presencePenalty}
+                onInput={(e) => props.onPresencePenaltyChange(parseFloat(e.currentTarget.value))}
+                class="w-full"
+              />
+            </div>
           </div>
-        </div>
+        </details>
       </Show>
     </div>
   );

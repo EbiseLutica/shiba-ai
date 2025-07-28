@@ -117,9 +117,8 @@ export const getAvailableModels = async (client: OpenAI): Promise<string[]> => {
   try {
     const models = await client.models.list();
     return models.data
-      .filter(model => model.id.includes('gpt'))
+      .sort((a, b) => b.created - a.created)
       .map(model => model.id)
-      .sort();
   } catch (error) {
     console.error('Failed to fetch models:', error);
     // APIでモデル取得に失敗した場合のフォールバック

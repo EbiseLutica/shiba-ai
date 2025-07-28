@@ -5,7 +5,6 @@ import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import RoomModal from './components/RoomModal';
-import UIShowcase from './components/UIShowcase';
 import { roomStorage, settingsStorage } from './utils/storage';
 import { createOpenAIClient, generateChatResponse } from './utils/openai';
 

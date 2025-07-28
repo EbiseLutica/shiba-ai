@@ -32,10 +32,11 @@ export interface TextareaProps
 
 const Textarea: Component<TextareaProps> = (props) => {
   const merged = mergeProps({ variant: 'default' as const, size: 'md' as const }, props);
-  const [local, others] = splitProps(merged, ['class', 'variant', 'size']);
+  const [local, others] = splitProps(merged, ['class', 'variant', 'size', 'ref']);
 
   return (
     <textarea
+      ref={local.ref}
       class={clsx(
         textareaVariants({ variant: local.variant, size: local.size }),
         local.class

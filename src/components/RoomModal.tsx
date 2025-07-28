@@ -111,31 +111,41 @@ const RoomModal: Component<RoomModalProps> = (props) => {
 
           {/* Mode Selection */}
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               設定モード
             </label>
-            <div class="flex gap-4">
-              <label class="flex items-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label class="flex items-start p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                 <input
                   type="radio"
                   name="mode"
                   value="simple"
                   checked={mode() === 'simple'}
                   onChange={() => setMode('simple')}
-                  class="mr-2"
+                  class="mt-1 mr-3"
                 />
-                <span class="text-gray-900 dark:text-white">簡単モード</span>
+                <div>
+                  <div class="font-medium text-gray-900 dark:text-white">簡単モード</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    いくつかの項目を入力するだけで、あなたの思い描くキャラクターを設定できます
+                  </div>
+                </div>
               </label>
-              <label class="flex items-center">
+              <label class="flex items-start p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                 <input
                   type="radio"
                   name="mode"
                   value="pro"
                   checked={mode() === 'pro'}
                   onChange={() => setMode('pro')}
-                  class="mr-2"
+                  class="mt-1 mr-3"
                 />
-                <span class="text-gray-900 dark:text-white">プロモード</span>
+                <div>
+                  <div class="font-medium text-gray-900 dark:text-white">プロモード</div>
+                  <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    AIに入力するシステムプロンプトを直接入力し、指示を完全にコントロールできる高度なモードです
+                  </div>
+                </div>
               </label>
             </div>
           </div>

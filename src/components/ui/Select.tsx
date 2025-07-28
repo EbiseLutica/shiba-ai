@@ -32,10 +32,11 @@ export interface SelectProps
 
 const Select: Component<SelectProps> = (props) => {
   const merged = mergeProps({ variant: 'default' as const, size: 'md' as const }, props);
-  const [local, others] = splitProps(merged, ['class', 'variant', 'size']);
+  const [local, others] = splitProps(merged, ['class', 'variant', 'size', 'ref']);
 
   return (
     <select
+      ref={local.ref}
       class={clsx(
         selectVariants({ variant: local.variant, size: local.size }),
         local.class
