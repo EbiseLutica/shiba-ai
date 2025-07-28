@@ -16,6 +16,7 @@ interface ModelConfigFormProps {
   onTopPChange: (value: number) => void;
   onFrequencyPenaltyChange: (value: number) => void;
   onPresencePenaltyChange: (value: number) => void;
+  onResetAdvanced?: () => void;
 }
 
 const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
@@ -35,10 +36,21 @@ const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
           <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
             高度な設定
           </summary>
-          <small class="text-xs text-gray-500 dark:text-gray-400">
-            各パラメータの意味がわからない場合は、そのままにしておいてください。
-          </small>
-          <div class="grid grid-cols-2 mt-4 gap-4">
+          <div class="flex items-center justify-between mt-2 mb-3">
+            <small class="text-xs text-gray-500 dark:text-gray-400">
+              各パラメータの意味がわからない場合は、そのままにしておいてください。
+            </small>
+            <Show when={props.onResetAdvanced}>
+              <button
+                type="button"
+                onClick={props.onResetAdvanced}
+                class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+              >
+                デフォルトに戻す
+              </button>
+            </Show>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Temperature ({props.temperature})

@@ -38,6 +38,15 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
   const [frequencyPenalty, setFrequencyPenalty] = createSignal(props.room?.model_config?.frequency_penalty || 0.0);
   const [presencePenalty, setPresencePenalty] = createSignal(props.room?.model_config?.presence_penalty || 0.0);
 
+  // Reset function for advanced model config
+  const resetAdvancedModelConfig = () => {
+    setTemperature(0.7);
+    setMaxTokens(2000);
+    setTopP(1.0);
+    setFrequencyPenalty(0.0);
+    setPresencePenalty(0.0);
+  };
+
   const handleSave = () => {
     const roomData: Partial<Room> = {
       name: roomName(),
@@ -171,6 +180,7 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
         onTopPChange={setTopP}
         onFrequencyPenaltyChange={setFrequencyPenalty}
         onPresencePenaltyChange={setPresencePenalty}
+        onResetAdvanced={resetAdvancedModelConfig}
       />
 
       {/* Action Buttons */}

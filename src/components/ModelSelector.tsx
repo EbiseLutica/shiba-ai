@@ -135,11 +135,11 @@ const ModelSelector: Component<ModelSelectorProps> = (props) => {
       </Select>
       <small class="text-xs text-gray-500 dark:text-gray-400">
         各モデルの詳細は
-        <a href="https://platform.openai.com/docs/models" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+        <a href="https://platform.openai.com/docs/models" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
           こちら
         </a>
         から、価格は
-        <a href="https://platform.openai.com/docs/pricing" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+        <a href="https://platform.openai.com/docs/pricing" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
           こちら
         </a>
         をご確認ください。
