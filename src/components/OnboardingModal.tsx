@@ -1,11 +1,12 @@
 import { createSignal, createMemo, Show, Component } from 'solid-js';
-import Button from './ui/Button';
-import Input from './ui/Input';
+import { Button, Input, OnboardingModal as OnboardingModalBase } from './ui';
 import RoomEditForm from './RoomEditForm';
 import { Room } from '../types';
+import OpenAIApiKeyGuideCard from './OpenAIApiKeyGuideCard';
 
 interface OnboardingModalProps {
   onComplete: (apiKey: string, room: Room) => void;
+  isOpen: boolean;
 }
 
 type OnboardingStep = 'welcome' | 'notices' | 'api-key' | 'room-creation' | 'complete';
@@ -81,207 +82,223 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
     }
   };
 
-  const openApiPlatform = () => {
-    window.open('https://platform.openai.com/api-keys', '_blank');
+  const getStepTitle = () => {
+    switch (currentStep()) {
+      case 'welcome':
+        return 'Shiba AIへようこそ！';
+      case 'notices':
+        return 'ご利用前の重要な注意点';
+      case 'api-key':
+        return 'API キーの設定';
+      case 'room-creation':
+        return 'キャラクターの設定';
+      case 'complete':
+        return '設定完了';
+      default:
+        return '初期設定';
+    }
   };
 
-  return (
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-              初期設定
-            </h2>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
-              {stepNumber()}/5
-            </span>
-          </div>
-          {/* Progress Bar */}
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div 
-              class="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(stepNumber() / 5) * 100}%` }}
-            />
-          </div>
+  const onboardingContent = (
+    <>
+      <Show when={currentStep() === 'welcome'}>
+        <div class="text-center space-y-4">
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+            Shiba AIへようこそ！
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+            このアプリでは、OpenAI APIを用いて、<br />
+            あなただけのAIキャラクターとチャットを楽しむことができます。
+          </p>
+          <p class="text-gray-600 dark:text-gray-300">
+            まず、簡単な設定を行いましょう。
+          </p>
         </div>
+      </Show>
 
-        {/* Content */}
-        <div class="p-6">
-          <Show when={currentStep() === 'welcome'}>
-            <div class="text-center space-y-4">
-              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
-                Shiba AIへようこそ！
-              </h3>
-              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                このアプリでは、OpenAI APIを用いて、<br />
-                あなただけのAIキャラクターとチャットを楽しむことができます。
-              </p>
-              <p class="text-gray-600 dark:text-gray-300">
-                まず、簡単な設定を行いましょう。
-              </p>
+      <Show when={currentStep() === 'notices'}>
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+            ご利用前の重要な注意点
+          </h3>
+          
+          <div class="space-y-4 text-gray-600 dark:text-gray-300">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <h4 class="font-semibold mb-2 flex items-center">
+                📱 データの保存について
+              </h4>
+              <ul class="space-y-1">
+                <li>・ブラウザのデータを削除すると、会話履歴や設定が失われます</li>
+                <li>・アプリのデータはエクスポートできるので、定期的にお手元に保存することをお勧めします</li>
+              </ul>
             </div>
-          </Show>
 
-          <Show when={currentStep() === 'notices'}>
-            <div class="space-y-4">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                ご利用前の重要な注意点
-              </h3>
-              
-              <div class="space-y-4 text-gray-600 dark:text-gray-300">
-                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <h4 class="font-semibold mb-2 flex items-center">
-                    📱 データの保存について
-                  </h4>
-                  <ul class="space-y-1">
-                    <li>・ブラウザのデータを削除すると、会話履歴や設定が失われます</li>
-                    <li>・アプリのデータはエクスポートできるので、定期的にお手元に保存することをお勧めします</li>
-                  </ul>
-                </div>
-
-                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-                  <h4 class="font-semibold mb-2 flex items-center">
-                    🤖 AIの応答について
-                  </h4>
-                  <ul class="space-y-1">
-                    <li>・AIの応答は必ずしも正確ではありません</li>
-                    <li>・重要な情報は必ず自分で確認してください</li>
-                    <li>・特に医学・法律等の専門分野では注意が必要です</li>
-                    <li>・本アプリの使用による損害について、開発者は責任を負いません</li>
-                    <li>・データはOpenAIのサーバーに送信されます。個人情報等を書き込まないよう注意し、自己責任でご利用ください</li>
-                  </ul>
-                </div>
-              </div>
-
-              <label class="flex items-start space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={agreedToNotices()}
-                  onChange={(e) => setAgreedToNotices(e.currentTarget.checked)}
-                  class="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <span class="text-sm text-gray-700 dark:text-gray-300">
-                  上記の注意点を理解しました
-                </span>
-              </label>
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+              <h4 class="font-semibold mb-2 flex items-center">
+                🤖 AIの応答について
+              </h4>
+              <ul class="space-y-1">
+                <li>・AIの応答は必ずしも正確ではありません</li>
+                <li>・重要な情報は必ず自分で確認してください</li>
+                <li>・センシティブな情報の共有は避けてください</li>
+              </ul>
             </div>
-          </Show>
 
-          <Show when={currentStep() === 'api-key'}>
-            <div class="space-y-4">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                OpenAI APIキーの設定
-              </h3>
-              
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
-                Shiba AIを使用するには、OpenAI APIキーが必要です。<br />
-                ご自身で<b>OpenAI API Platform</b>に登録し、APIキーを入手してください。
-              </p>
-
-              <Button
-                variant="outline"
-                onClick={openApiPlatform}
-                class="w-full"
-              >
-                OpenAI API Platformを開く
-              </Button>
-
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  APIキー
-                </label>
-                <Input
-                  type="password"
-                  value={apiKey()}
-                  onInput={(e: any) => setApiKey(e.currentTarget.value)}
-                  placeholder="sk-..."
-                  class="w-full"
-                />
-                <Show when={apiKey().length > 0 && !isApiKeyValid()}>
-                  <p class="text-red-500 text-xs">
-                    APIキーは「sk-」で始まる文字列である必要があります
-                  </p>
-                </Show>
-              </div>
+            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+              <h4 class="font-semibold mb-2 flex items-center">
+                💰 料金について
+              </h4>
+              <ul class="space-y-1">
+                <li>・OpenAI APIの利用料金は、OpenAIから直接課金されます</li>
+                <li>・料金を抑えたい場合は、より安価なモデルを選択してください</li>
+                <li>・必要に応じてAPI使用量の制限を設定することをお勧めします</li>
+              </ul>
             </div>
-          </Show>
 
-          <Show when={currentStep() === 'room-creation'}>
-            <div class="space-y-4">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                最初のAIキャラクターを作成しましょう
-              </h3>
-              
-              <p class="text-gray-600 dark:text-gray-300 text-sm">
-                ルームは、AIキャラクターとの会話空間です。<br />
-                かんたんモードまたはプロモードを選んで、最初のキャラクターを作成してみましょう。
-              </p>
-
-              <RoomEditForm
-                onSave={(roomData) => {
-                  setRoomFormData(roomData);
-                  handleNext();
-                }}
-                onCancel={handleBack}
-                showCancelButton={true}
-                saveButtonText="作成して開始"
-                showAdvancedModelConfig={false}
+            <label class="flex items-start gap-3 mt-6 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={agreedToNotices()}
+                onChange={(e) => setAgreedToNotices(e.currentTarget.checked)}
+                class="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-            </div>
-          </Show>
+              <span class="text-sm text-gray-700 dark:text-gray-300">
+                上記の注意点を理解し、同意します
+              </span>
+            </label>
+          </div>
+        </div>
+      </Show>
 
-          <Show when={currentStep() === 'complete'}>
-            <div class="text-center space-y-4">
-              <div class="text-6xl">🎉</div>
-              <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
-                設定完了！
-              </h3>
-              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                お疲れ様でした！Shiba AIの準備が完了しました。<br />
-                さっそくAIキャラクターとチャットを始めましょう。
+      <Show when={currentStep() === 'api-key'}>
+        <div class="space-y-4">
+          <div class="text-center">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              OpenAI API キーを設定してください
+            </h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+              ChappyはOpenAI APIを使用してAIと会話します。<br />
+              あなたのAPIキーを設定してください。
+            </p>
+          </div>
+
+          <OpenAIApiKeyGuideCard />
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              API キー
+            </label>
+            <Input
+              type="password"
+              value={apiKey()}
+              onInput={(e) => setApiKey(e.currentTarget.value)}
+              placeholder="sk-..."
+              class="w-full"
+            />
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              APIキーはローカルに保存され、外部に送信されることはありません
+            </p>
+          </div>
+
+          <Show when={!isApiKeyValid() && apiKey().length > 0}>
+            <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+              <p class="text-sm text-red-700 dark:text-red-300">
+                APIキーの形式が正しくありません。「sk-」で始まる文字列を入力してください。
               </p>
-              
-              <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg text-left">
-                <h4 class="font-semibold mb-2 text-blue-800 dark:text-blue-200">
-                  💡 ヒント:
-                </h4>
-                <ul class="space-y-1 text-sm text-blue-700 dark:text-blue-300">
-                  <li>• サイドバーから新しいルームを作成できます</li>
-                  <li>• 設定画面から詳細な設定を変更できます</li>
-                  <li>• データのエクスポート機能をぜひご活用ください</li>
-                </ul>
-              </div>
             </div>
           </Show>
         </div>
+      </Show>
 
-        {/* Footer */}
-        <Show when={currentStep() !== 'room-creation'}>
-          <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-between">
-            <Show when={currentStep() !== 'welcome'}>
-              <Button variant="outline" onClick={handleBack}>
-                戻る
-              </Button>
-            </Show>
-            <Show when={currentStep() === 'welcome'}>
-              <div />
-            </Show>
-            
-            <Button
-              onClick={handleNext}
-              disabled={
-                (currentStep() === 'notices' && !canProceedFromNotices()) ||
-                (currentStep() === 'api-key' && !canProceedFromApiKey())
-              }
-            >
-              {currentStep() === 'complete' ? 'チャットを開始' : '次へ'}
-            </Button>
+      <Show when={currentStep() === 'room-creation'}>
+        <div class="space-y-4">
+          <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              最初のキャラクターを作成しましょう
+            </h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              AIキャラクターの設定を行います。後から変更することも可能です。
+            </p>
           </div>
+
+          <RoomEditForm
+            room={null}
+            onSave={(roomData) => setRoomFormData(roomData)}
+            onCancel={() => {}}
+            showCancelButton={false}
+          />
+        </div>
+      </Show>
+
+      <Show when={currentStep() === 'complete'}>
+        <div class="text-center space-y-6">
+          <div class="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
+            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          
+          <div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              設定が完了しました！
+            </h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              これでChappyを使い始めることができます。
+            </p>
+          </div>
+
+          <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg text-left">
+            <h4 class="font-semibold mb-2 text-blue-800 dark:text-blue-200">
+              💡 ヒント
+            </h4>
+            <ul class="space-y-1 text-sm text-blue-700 dark:text-blue-300">
+              <li>• サイドバーから新しいルームを作成できます</li>
+              <li>• 設定画面から詳細な設定を変更できます</li>
+              <li>• データのエクスポート機能をぜひご活用ください</li>
+            </ul>
+          </div>
+        </div>
+      </Show>
+    </>
+  );
+
+  const footerContent = (
+    <Show when={currentStep() !== 'room-creation'}>
+      <div class="flex justify-between">
+        <Show when={currentStep() !== 'welcome'}>
+          <Button variant="outline" onClick={handleBack}>
+            戻る
+          </Button>
         </Show>
+        <Show when={currentStep() === 'welcome'}>
+          <div />
+        </Show>
+        
+        <Button
+          onClick={handleNext}
+          disabled={
+            (currentStep() === 'notices' && !canProceedFromNotices()) ||
+            (currentStep() === 'api-key' && !canProceedFromApiKey())
+          }
+        >
+          {currentStep() === 'complete' ? 'チャットを開始' : '次へ'}
+        </Button>
       </div>
-    </div>
+    </Show>
+  );
+
+  return (
+    <OnboardingModalBase
+      isOpen={props.isOpen}
+      onClose={() => {}} // オンボーディングは閉じることができない
+      currentStep={stepNumber()}
+      totalSteps={5}
+      stepTitle={getStepTitle()}
+      maxWidth="max-w-xl"
+      footerContent={footerContent}
+    >
+      {onboardingContent}
+    </OnboardingModalBase>
   );
 };
 

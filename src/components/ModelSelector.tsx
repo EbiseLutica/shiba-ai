@@ -133,17 +133,17 @@ const ModelSelector: Component<ModelSelectorProps> = (props) => {
           )}
         </For>
       </Select>
-      <small class="text-xs text-gray-500 dark:text-gray-400">
-        各モデルの詳細は
-        <a href="https://platform.openai.com/docs/models" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
-          こちら
-        </a>
-        から、価格は
-        <a href="https://platform.openai.com/docs/pricing" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
-          こちら
-        </a>
-        をご確認ください。
-      </small>
+      <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mt-2">
+        <p class="text-sm text-blue-700 dark:text-blue-300">
+          モデルの選択は、AIの応答の質や速度に影響します。<br />
+          <b>選択したモデルによって、従量課金の金額が変動します！！</b><br/>
+          必ず、
+          <a href="https://platform.openai.com/docs/models" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
+            OpenAIのドキュメント
+          </a>
+          をご確認ください。
+        </p>
+      </div>
     </div>
   );
 };

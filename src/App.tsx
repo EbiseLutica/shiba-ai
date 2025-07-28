@@ -462,49 +462,45 @@ const App: Component = () => {
       </div>
 
       {/* Settings Modal */}
-      {showSettings() && (
-        <SettingsModal
-          settings={settings()}
-          onSave={(newSettings) => {
-            setSettings(newSettings);
-            setShowSettings(false);
-          }}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
+      <SettingsModal
+        isOpen={showSettings()}
+        settings={settings()}
+        onSave={(newSettings) => {
+          setSettings(newSettings);
+          setShowSettings(false);
+        }}
+        onClose={() => setShowSettings(false)}
+      />
 
       {/* Room Modal */}
-      {showRoomModal() && (
-        <RoomModal
-          room={editingRoom()}
-          onSave={handleRoomSave}
-          onClose={() => {
-            setShowRoomModal(false);
-            setEditingRoom(null);
-          }}
-        />
-      )}
+      <RoomModal
+        isOpen={showRoomModal()}
+        room={editingRoom()}
+        onSave={handleRoomSave}
+        onClose={() => {
+          setShowRoomModal(false);
+          setEditingRoom(null);
+        }}
+      />
 
       {/* Search Modal */}
-      {showSearch() && (
-        <SearchModal
-          rooms={rooms()}
-          onRoomSelect={(roomId) => {
-            handleRoomSelect(roomId);
-            if (isMobile()) {
-              setShowMobileSidebar(false);
-            }
-          }}
-          onClose={() => setShowSearch(false)}
-        />
-      )}
+      <SearchModal
+        isOpen={showSearch()}
+        rooms={rooms()}
+        onRoomSelect={(roomId) => {
+          handleRoomSelect(roomId);
+          if (isMobile()) {
+            setShowMobileSidebar(false);
+          }
+        }}
+        onClose={() => setShowSearch(false)}
+      />
 
       {/* Onboarding Modal */}
-      {showOnboarding() && (
-        <OnboardingModal
-          onComplete={handleOnboardingComplete}
-        />
-      )}
+      <OnboardingModal
+        isOpen={showOnboarding()}
+        onComplete={handleOnboardingComplete}
+      />
     </div>
   );
 };
