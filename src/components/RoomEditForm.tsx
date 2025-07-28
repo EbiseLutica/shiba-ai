@@ -3,6 +3,7 @@ import { Room } from '../types';
 import SimpleConfigForm from './SimpleConfigForm';
 import ProConfigForm from './ProConfigForm';
 import ModelConfigForm from './ModelConfigForm';
+import { RequiredBadge } from './ui';
 
 interface RoomEditFormProps {
   room?: Room | null;
@@ -89,7 +90,7 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
       {/* Room Name */}
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          ルーム名 *
+          ルーム名<RequiredBadge />
         </label>
         <input
           type="text"

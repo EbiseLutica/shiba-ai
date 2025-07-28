@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import { Input, AutoResizeTextarea } from './ui';
+import { Input, AutoResizeTextarea, RequiredBadge } from './ui';
 
 interface SimpleConfigFormProps {
   characterName: string;
@@ -19,7 +19,7 @@ const SimpleConfigForm: Component<SimpleConfigFormProps> = (props) => {
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          キャラクター名 *
+          キャラクター名<RequiredBadge />
         </label>
         <Input
           type="text"

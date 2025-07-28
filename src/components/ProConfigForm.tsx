@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import { AutoResizeTextarea } from './ui';
+import { AutoResizeTextarea, RequiredBadge } from './ui';
 
 interface ProConfigFormProps {
   systemPrompt: string;
@@ -10,7 +10,7 @@ const ProConfigForm: Component<ProConfigFormProps> = (props) => {
   return (
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        システムプロンプト *
+        システムプロンプト<RequiredBadge />
       </label>
       <AutoResizeTextarea
         value={props.systemPrompt}

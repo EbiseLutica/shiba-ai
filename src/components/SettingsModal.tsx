@@ -231,6 +231,18 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
           エクスポートにはAPIキーは含まれません
         </p>
       </div>
+
+      {/* 開発者情報など */}
+      <div class="text-xs mt-4 text-gray-500 dark:text-gray-400">
+        <p>Shiba AIはオープンソースのプロジェクトです。</p>
+        <p>GitHubでコードを確認できます。</p>
+        <a 
+          href="https://github.com/EbiseLutica/shiba-ai"
+          class="text-blue-500 hover:underline"
+        >
+          リポジトリ
+        </a>
+      </div>
     </div>
   );
 

@@ -5,6 +5,7 @@ export { default as AutoResizeTextarea } from './AutoResizeTextarea';
 export { default as Select } from './Select';
 export { default as Modal } from './Modal';
 export { default as OnboardingModal } from './OnboardingModal';
+export { default as RequiredBadge } from './RequiredBadge';
 
 export type { ButtonProps } from './Button';
 export type { InputProps } from './Input';
