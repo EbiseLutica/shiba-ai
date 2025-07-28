@@ -8,5 +8,5 @@ export default {
     extend: {},
   },
   plugins: [],
-  darkMode: 'media', // ブラウザの設定に自動追従
+  darkMode: 'class', // クラスベースのダークモード対応
 }

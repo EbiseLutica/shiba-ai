@@ -92,11 +92,71 @@ const safeSetItem = (key: string, value: any): boolean => {
     // 容量超過エラーの場合の処理
     if (error instanceof DOMException && error.name === 'QuotaExceededError') {
       console.error('LocalStorage quota exceeded');
-      // TODO: 容量超過時の処理（古いデータの削除など）
+      
+      // 容量超過時のエラーログを記録
+      const jsonString = JSON.stringify(value);
+      logStorageError('quota_exceeded', {
+        key,
+        dataSize: new Blob([jsonString]).size,
+        currentUsage: getStorageUsage(),
+        timestamp: new Date().toISOString()
+      });
+      
+      // 可能であれば古いデータをクリアして再試行
+      return handleQuotaExceeded(key, value);
     }
+    
+    // その他のエラーもログに記録
+    logStorageError('storage_error', {
+      key,
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    });
+    
     return false;
   }
 };
+
+// 容量超過時の処理
+const handleQuotaExceeded = (key: string, value: any): boolean => {
+  try {
+    // デバッグ情報などの不要なデータを削除
+    const keysToClean = Object.keys(localStorage).filter(k => 
+      k.startsWith('debug_') || 
+      k.startsWith('temp_') ||
+      k.startsWith('cache_')
+    );
+    
+    for (const keyToClean of keysToClean) {
+      localStorage.removeItem(keyToClean);
+    }
+    
+    // 再試行
+    const jsonString = JSON.stringify(value);
+    localStorage.setItem(key, jsonString);
+    console.info('Successfully saved after cleaning temporary data');
+    return true;
+  } catch (error) {
+    console.error('Failed to save even after cleanup:', error);
+    return false;
+  }
+};
+
+// エラーログ機能（メモリ内に保持、永続化しない）
+let errorLogs: Array<{ type: string; data: any; timestamp: string }> = [];
+const MAX_ERROR_LOGS = 50;
+
+const logStorageError = (type: string, data: any) => {
+  errorLogs.unshift({ type, data, timestamp: new Date().toISOString() });
+  
+  // ログの上限を維持
+  if (errorLogs.length > MAX_ERROR_LOGS) {
+    errorLogs = errorLogs.slice(0, MAX_ERROR_LOGS);
+  }
+};
+
+// エラーログを取得（デバッグ用）
+export const getStorageErrorLogs = () => errorLogs;
 
 // ルームデータの読み書き
 export const roomStorage = {

@@ -12,6 +12,7 @@ interface ChatAreaProps {
   onRegenerateMessage: (messageId: string) => void;
   onToggleMobileSidebar: () => void;
   onEditRoom?: () => void;
+  onSearch: () => void;
   isMobile: boolean;
   isWaitingForResponse?: boolean;
 }
@@ -34,6 +35,7 @@ const ChatArea: Component<ChatAreaProps> = (props) => {
         room={props.room}
         onToggleMobileSidebar={props.onToggleMobileSidebar}
         onEditRoom={props.onEditRoom}
+        onSearch={props.onSearch}
         isMobile={props.isMobile}
       />
 

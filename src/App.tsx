@@ -1,10 +1,11 @@
-import { createSignal, createMemo, Component, onMount, createEffect } from 'solid-js';
+import { createSignal, createMemo, Component, onMount, createEffect, Show } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { Room, AppSettings, Message } from './types';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import RoomModal from './components/RoomModal';
+import SearchModal from './components/SearchModal';
 import { roomStorage, settingsStorage } from './utils/storage';
 import { createOpenAIClient, generateChatResponse } from './utils/openai';
 
@@ -14,6 +15,7 @@ const App: Component = () => {
   const [currentRoomId, setCurrentRoomId] = createSignal<string | null>(roomStorage.getCurrentRoomId());
   const [settings, setSettings] = createSignal<AppSettings>(settingsStorage.getSettings());
   const [showSettings, setShowSettings] = createSignal(false);
+  const [showSearch, setShowSearch] = createSignal(false);
   const [isMobile, setIsMobile] = createSignal(false);
   const [showMobileSidebar, setShowMobileSidebar] = createSignal(false);
   const [showRoomModal, setShowRoomModal] = createSignal(false);
@@ -26,25 +28,61 @@ const App: Component = () => {
     return id ? rooms().find(room => room.id === id) : null;
   });
 
-  // データの自動保存エフェクト
+  // データの自動保存エフェクト（エラーハンドリング付き）
   createEffect(() => {
     // ルームデータが変更されたらLocalStorageに保存
-    roomStorage.saveRooms(rooms());
+    const success = roomStorage.saveRooms(rooms());
+    if (!success) {
+      console.error('Failed to save rooms to localStorage');
+      // TODO: ユーザーに保存失敗を通知
+    }
   });
 
   createEffect(() => {
     // 現在のルームIDが変更されたらLocalStorageに保存
-    roomStorage.saveCurrentRoomId(currentRoomId());
+    const success = roomStorage.saveCurrentRoomId(currentRoomId());
+    if (!success) {
+      console.error('Failed to save current room ID to localStorage');
+    }
   });
 
   createEffect(() => {
     // 設定が変更されたらLocalStorageに保存
-    settingsStorage.saveSettings(settings());
+    const success = settingsStorage.saveSettings(settings());
+    if (!success) {
+      console.error('Failed to save settings to localStorage');
+    }
   });
 
-  // モバイル判定
+  // レスポンシブブレークポイント判定
   const checkMobile = () => {
-    setIsMobile(window.innerWidth < 768);
+    const width = window.innerWidth;
+    setIsMobile(width < 768); // md breakpoint
+  };
+
+  // テーマ適用
+  const applyTheme = (theme: 'auto' | 'light' | 'dark') => {
+    const root = document.documentElement;
+    
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else if (theme === 'light') {
+      root.classList.remove('dark');
+    } else {
+      // auto - システム設定に従う
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+  };
+
+  // システムカラースキーム変更の監視
+  const handleSystemThemeChange = () => {
+    if (settings().theme === 'auto') {
+      applyTheme('auto');
+    }
   };
 
   // 初期化
@@ -52,10 +90,23 @@ const App: Component = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
+    // テーマを初期化
+    applyTheme(settings().theme);
+    
+    // システムカラースキーム変更を監視
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    
     // クリーンアップ
     return () => {
       window.removeEventListener('resize', checkMobile);
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
     };
+  });
+
+  // テーマ設定変更時に適用
+  createEffect(() => {
+    applyTheme(settings().theme);
   });
 
   const handleRoomSelect = (roomId: string) => {
@@ -197,6 +248,132 @@ const App: Component = () => {
     }
   };
 
+  // メッセージ編集処理
+  const handleEditMessage = (messageId: string, newContent: string) => {
+    const room = currentRoom();
+    if (!room) return;
+
+    setRooms(prev => prev.map(r => 
+      r.id === room.id 
+        ? {
+            ...r,
+            messages: r.messages.map(msg => 
+              msg.id === messageId 
+                ? { ...msg, content: newContent, timestamp: Date.now() }
+                : msg
+            ),
+            updated_at: Date.now()
+          }
+        : r
+    ));
+  };
+
+  // メッセージ削除処理
+  const handleDeleteMessage = (messageId: string) => {
+    const room = currentRoom();
+    if (!room) return;
+
+    // 削除確認
+    if (!confirm('このメッセージを削除しますか？')) return;
+
+    setRooms(prev => prev.map(r => 
+      r.id === room.id 
+        ? {
+            ...r,
+            messages: r.messages.filter(msg => msg.id !== messageId),
+            updated_at: Date.now()
+          }
+        : r
+    ));
+  };
+
+  // メッセージ再生成処理
+  const handleRegenerateMessage = async (messageId: string) => {
+    const room = currentRoom();
+    const currentSettings = settings();
+    
+    if (!room || isWaitingForResponse()) return;
+
+    // APIキーのチェック
+    if (!currentSettings.api_key) {
+      setShowSettings(true);
+      return;
+    }
+
+    // 再生成確認
+    if (!confirm('AIの応答を再生成しますか？')) return;
+
+    // 指定されたメッセージのインデックスを取得
+    const messageIndex = room.messages.findIndex(msg => msg.id === messageId);
+    if (messageIndex === -1) return;
+
+    // 指定されたメッセージ以降を削除して、再生成の準備
+    const messagesBeforeRegenerate = room.messages.slice(0, messageIndex);
+    
+    setRooms(prev => prev.map(r => 
+      r.id === room.id 
+        ? {
+            ...r,
+            messages: messagesBeforeRegenerate,
+            updated_at: Date.now()
+          }
+        : r
+    ));
+
+    // 待機状態を開始
+    setIsWaitingForResponse(true);
+
+    try {
+      // OpenAI APIクライアントを作成
+      const client = createOpenAIClient(currentSettings.api_key);
+      
+      // OpenAI APIでAIの返答を再生成
+      const aiResponse = await generateChatResponse(client, room, messagesBeforeRegenerate);
+      
+      // 新しいAIメッセージを追加
+      const newAiMessage: Message = {
+        id: uuidv4(),
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: Date.now()
+      };
+
+      setRooms(prev => prev.map(r => 
+        r.id === room.id 
+          ? { 
+              ...r, 
+              messages: [...messagesBeforeRegenerate, newAiMessage],
+              updated_at: Date.now()
+            }
+          : r
+      ));
+      
+    } catch (error) {
+      console.error('Failed to regenerate AI response:', error);
+      
+      // エラー時はエラーメッセージを追加
+      const errorMessage: Message = {
+        id: uuidv4(),
+        role: 'assistant',
+        content: 'エラーが発生しました。再生成に失敗しました。',
+        timestamp: Date.now()
+      };
+
+      setRooms(prev => prev.map(r => 
+        r.id === room.id 
+          ? { 
+              ...r, 
+              messages: [...messagesBeforeRegenerate, errorMessage],
+              updated_at: Date.now()
+            }
+          : r
+      ));
+    } finally {
+      // 待機状態を終了
+      setIsWaitingForResponse(false);
+    }
+  };
+
   return (
     <div class="h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex overflow-hidden">
       {/* Desktop Sidebar */}
@@ -246,11 +423,12 @@ const App: Component = () => {
         <ChatArea
           room={currentRoom() || null}
           onSendMessage={handleSendMessage}
-          onEditMessage={(messageId, content) => console.log('メッセージ編集:', messageId, content)}
-          onDeleteMessage={(messageId) => console.log('メッセージ削除:', messageId)}
-          onRegenerateMessage={(messageId) => console.log('メッセージ再生成:', messageId)}
+          onEditMessage={handleEditMessage}
+          onDeleteMessage={handleDeleteMessage}
+          onRegenerateMessage={handleRegenerateMessage}
           onToggleMobileSidebar={() => setShowMobileSidebar(!showMobileSidebar())}
           onEditRoom={handleEditCurrentRoom}
+          onSearch={() => setShowSearch(true)}
           isMobile={isMobile()}
           isWaitingForResponse={isWaitingForResponse()}
         />
@@ -277,6 +455,20 @@ const App: Component = () => {
             setShowRoomModal(false);
             setEditingRoom(null);
           }}
+        />
+      )}
+
+      {/* Search Modal */}
+      {showSearch() && (
+        <SearchModal
+          rooms={rooms()}
+          onRoomSelect={(roomId) => {
+            handleRoomSelect(roomId);
+            if (isMobile()) {
+              setShowMobileSidebar(false);
+            }
+          }}
+          onClose={() => setShowSearch(false)}
         />
       )}
     </div>
