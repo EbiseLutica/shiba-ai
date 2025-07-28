@@ -177,7 +177,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
               OpenAI API キーを設定してください
             </h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6">
-              ChappyはOpenAI APIを使用してAIと会話します。<br />
+              Shiba AIはOpenAI APIを使用してAIと会話します。<br />
               あなたのAPIキーを設定してください。
             </p>
           </div>
@@ -243,7 +243,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
               設定が完了しました！
             </h3>
             <p class="text-gray-600 dark:text-gray-300">
-              これでChappyを使い始めることができます。
+              これでShiba AIを使い始めることができます。
             </p>
           </div>
 
