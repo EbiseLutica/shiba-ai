@@ -8,6 +8,7 @@ interface MessageListProps {
   onDeleteMessage: (messageId: string) => void;
   onRegenerateMessage: (messageId: string) => void;
   isLoading: boolean;
+  isWaitingForResponse?: boolean;
 }
 
 const MessageList: Component<MessageListProps> = (props) => {
@@ -85,13 +86,16 @@ const MessageList: Component<MessageListProps> = (props) => {
       </Show>
 
       {/* Loading indicator */}
-      <Show when={props.isLoading}>
+      <Show when={props.isLoading || props.isWaitingForResponse}>
         <div class="flex justify-start">
           <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
-            <div class="flex space-x-1">
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-              <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="flex items-center space-x-2">
+              <div class="flex space-x-1">
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+              </div>
+              <span class="text-sm text-gray-500 dark:text-gray-400">書き込み中…</span>
             </div>
           </div>
         </div>

@@ -45,6 +45,7 @@ const ChatArea: Component<ChatAreaProps> = (props) => {
         onDeleteMessage={props.onDeleteMessage}
         onRegenerateMessage={props.onRegenerateMessage}
         isLoading={isLoading()}
+        isWaitingForResponse={props.isWaitingForResponse ?? false}
       />
 
       <Show when={props.room}>
