@@ -3,6 +3,7 @@ import { Button, Input, OnboardingModal as OnboardingModalBase } from './ui';
 import RoomEditForm from './RoomEditForm';
 import { Room } from '../types';
 import OpenAIApiKeyGuideCard from './OpenAIApiKeyGuideCard';
+import { DEFAULT_SETTINGS, settingsStorage } from '../utils/storage';
 
 interface OnboardingModalProps {
   onComplete: (apiKey: string, room: Room) => void;
@@ -38,6 +39,10 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
     } else if (current === 'notices' && canProceedFromNotices()) {
       setCurrentStep('api-key');
     } else if (current === 'api-key' && canProceedFromApiKey()) {
+      settingsStorage.saveSettings({
+        ...DEFAULT_SETTINGS,
+        api_key: apiKey(),
+      });
       setCurrentStep('room-creation');
     } else if (current === 'room-creation' && canProceedFromRoomCreation()) {
       setCurrentStep('complete');

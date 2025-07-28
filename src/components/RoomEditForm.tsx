@@ -31,7 +31,7 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
   const [systemPrompt, setSystemPrompt] = createSignal(props.room?.pro_config?.system_prompt || '');
   
   // Model config
-  const [selectedModel, setSelectedModel] = createSignal(props.room?.model_config?.model || 'gpt-4o');
+  const [selectedModel, setSelectedModel] = createSignal(props.room?.model_config?.model || 'gpt-4.1');
   const [temperature, setTemperature] = createSignal(props.room?.model_config?.temperature || 0.7);
   const [maxTokens, setMaxTokens] = createSignal(props.room?.model_config?.max_tokens || 2000);
   const [topP, setTopP] = createSignal(props.room?.model_config?.top_p || 1.0);

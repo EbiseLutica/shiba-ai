@@ -19,7 +19,7 @@ const RoomModal: Component<RoomModalProps> = (props) => {
       onClose={props.onClose}
       title={isEditing() ? 'ルームを編集' : '新しいルームを作成'}
       maxWidth="max-w-2xl"
-      closeOnBackdropClick={true}
+      closeOnBackdropClick={false}
       showCloseButton={true}
     >
       <RoomEditForm

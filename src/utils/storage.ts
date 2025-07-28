@@ -11,7 +11,7 @@ export const STORAGE_KEYS = {
 export const DEFAULT_SETTINGS: AppSettings = {
   api_key: '',
   theme: 'auto',
-  default_model: 'gpt-4o',
+  default_model: 'gpt-4.1',
   ui_preferences: {
     sidebar_collapsed: false
   },

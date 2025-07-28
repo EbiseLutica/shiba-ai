@@ -14,6 +14,8 @@ interface ModelSelectorProps {
 const ModelSelector: Component<ModelSelectorProps> = (props) => {
   // 初期のデフォルトモデル一覧
   const defaultModels = [
+    'gpt-4.1',
+    'gpt-4.1-mini',
     'gpt-4o',
     'gpt-4o-mini',
     'gpt-4-turbo',
