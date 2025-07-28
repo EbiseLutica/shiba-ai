@@ -1,6 +1,7 @@
 import { Component, Show, createSignal } from 'solid-js';
 import { Message } from '../types';
 import { AutoResizeTextarea } from './ui';
+import { SolidMarkdown } from 'solid-markdown';
 
 interface MessageItemProps {
   message: Message;
@@ -45,7 +46,7 @@ const MessageItem: Component<MessageItemProps> = (props) => {
               ? 'bg-blue-600 text-white ml-auto'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
           }`}>
-            <div class="whitespace-pre-wrap">{props.message.content}</div>
+            <SolidMarkdown class="chat-body">{props.message.content}</SolidMarkdown>
           </div>
           
           <div class={`flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400 ${

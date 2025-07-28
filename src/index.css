@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.chat-body {
+    line-height: 1.5;
+}
+
+.chat-body h1 {
+    @apply text-4xl font-bold mb-4;
+}
+
+.chat-body h2 {
+    @apply text-2xl font-semibold mb-3 mt-6;
+}
+
+.chat-body h3 {
+    @apply text-xl font-medium mb-2 mt-6;
+}
+
+.chat-body ul,
+.chat-body ol {
+    @apply list-disc pl-5 mb-3;
+}   
+
+.chat-body li {
+    @apply mb-1;
+}
+
+.chat-body hr {
+    @apply border-t border-gray-300 dark:border-gray-600 my-4;
+}
+
+.chat-body code {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-1 py-0.5 rounded;
+}
+
+.chat-body pre {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white p-3 rounded overflow-x-auto;
+}
+
+.chat-body blockquote {
+    @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-700 dark:text-gray-300 mb-3;
+}

@@ -6,4 +6,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  optimizeDeps: {
+    include: ['solid-markdown > micromark', 'solid-markdown > unified'],
+  },
 });
