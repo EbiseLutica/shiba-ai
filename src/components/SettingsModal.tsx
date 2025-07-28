@@ -35,10 +35,11 @@ const SettingsModal: Component<SettingsModalProps> = (props) => {
 
   const handleSave = () => {
     props.onSave({
+      ...props.settings,
       api_key: apiKey(),
       theme: theme(),
       default_model: defaultModel(),
-      ui_preferences: props.settings.ui_preferences
+      ui_preferences: props.settings.ui_preferences,
     });
   };
 
