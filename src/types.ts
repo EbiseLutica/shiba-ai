@@ -41,6 +41,12 @@ export interface AppSettings {
   ui_preferences: {
     sidebar_collapsed: boolean;
   };
+  onboarding: {
+    completed: boolean;
+    version: string;
+    completed_at: number;
+    skipped_steps: string[];
+  };
 }
 
 export interface ExportData {

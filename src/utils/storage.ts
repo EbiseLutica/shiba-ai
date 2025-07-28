@@ -14,6 +14,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   default_model: 'gpt-4o',
   ui_preferences: {
     sidebar_collapsed: false
+  },
+  onboarding: {
+    completed: false,
+    version: '1.0',
+    completed_at: 0,
+    skipped_steps: []
   }
 };
 
@@ -263,4 +269,72 @@ export const checkStorageQuota = (): { isNearLimit: boolean; isOverLimit: boolea
     isNearLimit: usagePercentage >= 80, // 80%以上で警告
     isOverLimit: usagePercentage >= 95   // 95%以上で制限
   };
+};
+
+// オンボーディング関連の関数
+export const onboardingStorage = {
+  // オンボーディングが必要かどうかをチェック
+  shouldShowOnboarding: (): boolean => {
+    const settings = settingsStorage.getSettings();
+    console.log(settings);
+    
+    // オンボーディング情報が存在しない場合
+    if (!settings.onboarding) {
+      return true;
+    }
+    
+    // 完了していない場合
+    if (!settings.onboarding.completed) {
+      return true;
+    }
+    
+    // バージョンが異なる場合
+    if (settings.onboarding.version !== '1.0') {
+      return true;
+    }
+    
+    return false;
+  },
+
+  // オンボーディング完了を記録
+  markOnboardingComplete: (skippedSteps: string[] = []): boolean => {
+    try {
+      const currentSettings = settingsStorage.getSettings();
+      const updatedSettings: AppSettings = {
+        ...currentSettings,
+        onboarding: {
+          completed: true,
+          version: '1.0',
+          completed_at: Date.now(),
+          skipped_steps: skippedSteps
+        }
+      };
+      
+      return settingsStorage.saveSettings(updatedSettings);
+    } catch (error) {
+      console.error('Failed to mark onboarding as complete:', error);
+      return false;
+    }
+  },
+
+  // オンボーディングをリセット（開発・デバッグ用）
+  resetOnboarding: (): boolean => {
+    try {
+      const currentSettings = settingsStorage.getSettings();
+      const updatedSettings: AppSettings = {
+        ...currentSettings,
+        onboarding: {
+          completed: false,
+          version: '1.0',
+          completed_at: 0,
+          skipped_steps: []
+        }
+      };
+      
+      return settingsStorage.saveSettings(updatedSettings);
+    } catch (error) {
+      console.error('Failed to reset onboarding:', error);
+      return false;
+    }
+  }
 };

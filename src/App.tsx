@@ -1,4 +1,4 @@
-import { createSignal, createMemo, Component, onMount, createEffect, Show } from 'solid-js';
+import { createSignal, createMemo, Component, onMount, createEffect } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { Room, AppSettings, Message } from './types';
 import Sidebar from './components/Sidebar';
@@ -6,7 +6,8 @@ import ChatArea from './components/ChatArea';
 import SettingsModal from './components/SettingsModal';
 import RoomModal from './components/RoomModal';
 import SearchModal from './components/SearchModal';
-import { roomStorage, settingsStorage } from './utils/storage';
+import OnboardingModal from './components/OnboardingModal';
+import { roomStorage, settingsStorage, onboardingStorage } from './utils/storage';
 import { createOpenAIClient, generateChatResponse } from './utils/openai';
 
 const App: Component = () => {
@@ -21,6 +22,7 @@ const App: Component = () => {
   const [showRoomModal, setShowRoomModal] = createSignal(false);
   const [editingRoom, setEditingRoom] = createSignal<Room | null>(null);
   const [isWaitingForResponse, setIsWaitingForResponse] = createSignal(false);
+  const [showOnboarding, setShowOnboarding] = createSignal(false);
 
   // Current room計算
   const currentRoom = createMemo(() => {
@@ -97,6 +99,11 @@ const App: Component = () => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', handleSystemThemeChange);
     
+    // オンボーディングの表示判定
+    if (onboardingStorage.shouldShowOnboarding()) {
+      setShowOnboarding(true);
+    }
+    
     // クリーンアップ
     return () => {
       window.removeEventListener('resize', checkMobile);
@@ -131,6 +138,26 @@ const App: Component = () => {
     if (room) {
       handleEditRoom(room);
     }
+  };
+
+  // オンボーディング完了処理
+  const handleOnboardingComplete = (apiKey: string, room: Room) => {
+    // APIキーを設定に保存
+    const newSettings: AppSettings = {
+      ...settings(),
+      api_key: apiKey
+    };
+    setSettings(newSettings);
+    
+    // ルームを追加
+    setRooms([room]);
+    setCurrentRoomId(room.id);
+    
+    // オンボーディング完了を記録
+    onboardingStorage.markOnboardingComplete();
+    
+    // オンボーディングモーダルを閉じる
+    setShowOnboarding(false);
   };
 
   const handleRoomSave = (roomData: Partial<Room>) => {
@@ -469,6 +496,13 @@ const App: Component = () => {
             }
           }}
           onClose={() => setShowSearch(false)}
+        />
+      )}
+
+      {/* Onboarding Modal */}
+      {showOnboarding() && (
+        <OnboardingModal
+          onComplete={handleOnboardingComplete}
         />
       )}
     </div>

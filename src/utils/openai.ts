@@ -123,6 +123,7 @@ export const getAvailableModels = async (client: OpenAI): Promise<string[]> => {
     console.error('Failed to fetch models:', error);
     // APIでモデル取得に失敗した場合のフォールバック
     return [
+      'gpt-4.1',
       'gpt-4o',
       'gpt-4o-mini',
       'gpt-4-turbo',
