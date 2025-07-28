@@ -13,7 +13,7 @@ const SidebarHeader: Component<SidebarHeaderProps> = (props) => {
       {!props.collapsed ? (
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Chappy</h1>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Shiba AI</h1>
             <div class="flex gap-2">
               <button
                 onClick={props.onToggleCollapse}

@@ -112,7 +112,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
           <Show when={currentStep() === 'welcome'}>
             <div class="text-center space-y-4">
               <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
-                Chappyへようこそ！
+                Shiba AIへようこそ！
               </h3>
               <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                 このアプリでは、OpenAI APIを用いて、<br />
@@ -136,9 +136,8 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
                     📱 データの保存について
                   </h4>
                   <ul class="space-y-1">
-                    <li>• このアプリは、サーバーに一切のデータが送信されません</li>
-                    <li>• ブラウザのデータを削除すると、会話履歴や設定が失われます</li>
-                    <li>• アプリのデータはエクスポートできるので、定期的にお手元に保存することをお勧めします</li>
+                    <li>・ブラウザのデータを削除すると、会話履歴や設定が失われます</li>
+                    <li>・アプリのデータはエクスポートできるので、定期的にお手元に保存することをお勧めします</li>
                   </ul>
                 </div>
 
@@ -147,10 +146,11 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
                     🤖 AIの応答について
                   </h4>
                   <ul class="space-y-1">
-                    <li>• AIの応答は必ずしも正確ではありません</li>
-                    <li>• 重要な情報は必ず自分で確認してください</li>
-                    <li>• 特に医学・法律等の専門分野では注意が必要です</li>
-                    <li>• 本アプリの使用による損害について、開発者は責任を負いません</li>
+                    <li>・AIの応答は必ずしも正確ではありません</li>
+                    <li>・重要な情報は必ず自分で確認してください</li>
+                    <li>・特に医学・法律等の専門分野では注意が必要です</li>
+                    <li>・本アプリの使用による損害について、開発者は責任を負いません</li>
+                    <li>・データはOpenAIのサーバーに送信されます。個人情報等を書き込まないよう注意し、自己責任でご利用ください</li>
                   </ul>
                 </div>
               </div>
@@ -176,8 +176,8 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
               </h3>
               
               <p class="text-gray-600 dark:text-gray-300 text-sm">
-                Chappyを使用するには、OpenAI APIキーが必要です。<br />
-                APIキーは、OpenAI API Platformから取得できます。
+                Shiba AIを使用するには、OpenAI APIキーが必要です。<br />
+                ご自身で<b>OpenAI API Platform</b>に登録し、APIキーを入手してください。
               </p>
 
               <Button
@@ -216,7 +216,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
               
               <p class="text-gray-600 dark:text-gray-300 text-sm">
                 ルームは、AIキャラクターとの会話空間です。<br />
-                簡単モードまたはプロモードを選んで、最初のキャラクターを作成してみましょう。
+                かんたんモードまたはプロモードを選んで、最初のキャラクターを作成してみましょう。
               </p>
 
               <RoomEditForm
@@ -239,7 +239,7 @@ const OnboardingModal: Component<OnboardingModalProps> = (props) => {
                 設定完了！
               </h3>
               <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                お疲れ様でした！Chappyの準備が完了しました。<br />
+                お疲れ様でした！Shiba AIの準備が完了しました。<br />
                 さっそくAIキャラクターとチャットを始めましょう。
               </p>
               

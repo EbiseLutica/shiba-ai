@@ -116,7 +116,7 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
               class="mt-1 mr-3"
             />
             <div>
-              <div class="font-medium text-gray-900 dark:text-white">簡単モード</div>
+              <div class="font-medium text-gray-900 dark:text-white">かんたんモード</div>
               <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 いくつかの項目を入力するだけで、あなたの思い描くキャラクターを設定できます
               </div>

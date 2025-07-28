@@ -19,7 +19,7 @@ export const generateSystemPrompt = (room: Room): string => {
     return room.pro_config.system_prompt;
   }
 
-  // 簡単モードの場合、設定からシステムプロンプトを構築
+  // かんたんモードの場合、設定からシステムプロンプトを構築
   const config = room.simple_config;
   if (!config) return '';
 

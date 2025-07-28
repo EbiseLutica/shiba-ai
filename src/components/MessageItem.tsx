@@ -92,7 +92,7 @@ const MessageItem: Component<MessageItemProps> = (props) => {
         </div>
       </div>
     }>
-      {/* 編集モード - 全幅使用 */}
+      {/* 編集モード */}
       <div class="w-full">
         <div class="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4">
           <div class="mb-2 text-sm text-gray-600 dark:text-gray-400">
