@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { Room, Message } from '../types';
 import { ResponsesModel } from 'openai/resources';
-import { ResponseInput } from 'openai/resources/responses/responses.mjs';
+import { ResponseCreateParamsNonStreaming, ResponseInput } from 'openai/resources/responses/responses.mjs';
 
 /**
  * OpenAI APIクライアントを作成
@@ -80,7 +80,7 @@ export const generateChatResponse = async (
       });
     });
 
-    const body: any = {
+    const body: ResponseCreateParamsNonStreaming = {
       model: room.model_config?.model || 'gpt-4.1',
       input: openaiMessages,
       max_output_tokens: room.model_config?.max_tokens || 1000,
