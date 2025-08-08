@@ -36,16 +36,12 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
   const [temperature, setTemperature] = createSignal(props.room?.model_config?.temperature || 0.7);
   const [maxTokens, setMaxTokens] = createSignal(props.room?.model_config?.max_tokens || 2000);
   const [topP, setTopP] = createSignal(props.room?.model_config?.top_p || 1.0);
-  const [frequencyPenalty, setFrequencyPenalty] = createSignal(props.room?.model_config?.frequency_penalty || 0.0);
-  const [presencePenalty, setPresencePenalty] = createSignal(props.room?.model_config?.presence_penalty || 0.0);
 
   // Reset function for advanced model config
   const resetAdvancedModelConfig = () => {
     setTemperature(0.7);
     setMaxTokens(2000);
     setTopP(1.0);
-    setFrequencyPenalty(0.0);
-    setPresencePenalty(0.0);
   };
 
   const handleSave = () => {
@@ -57,8 +53,6 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
         temperature: temperature(),
         max_tokens: maxTokens(),
         top_p: topP(),
-        frequency_penalty: frequencyPenalty(),
-        presence_penalty: presencePenalty()
       }
     };
 
@@ -172,15 +166,11 @@ const RoomEditForm: Component<RoomEditFormProps> = (props) => {
         temperature={temperature()}
         maxTokens={maxTokens()}
         topP={topP()}
-        frequencyPenalty={frequencyPenalty()}
-        presencePenalty={presencePenalty()}
         showAdvanced={props.showAdvancedModelConfig ?? (mode() === 'pro')}
         onSelectedModelChange={setSelectedModel}
         onTemperatureChange={setTemperature}
         onMaxTokensChange={setMaxTokens}
         onTopPChange={setTopP}
-        onFrequencyPenaltyChange={setFrequencyPenalty}
-        onPresencePenaltyChange={setPresencePenalty}
         onResetAdvanced={resetAdvancedModelConfig}
       />
 

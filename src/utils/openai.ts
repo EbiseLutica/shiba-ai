@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
 import { Room, Message } from '../types';
+import { ResponsesModel } from 'openai/resources';
+import { ResponseInput } from 'openai/resources/responses/responses.mjs';
 
 /**
  * OpenAI APIクライアントを作成
@@ -60,7 +62,7 @@ export const generateChatResponse = async (
     const systemPrompt = generateSystemPrompt(room);
     
     // メッセージを OpenAI API 形式に変換
-    const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [];
+    const openaiMessages: ResponseInput = [];
     
     // システムプロンプトを追加
     if (systemPrompt) {
@@ -78,18 +80,21 @@ export const generateChatResponse = async (
       });
     });
 
-    // API呼び出し
-    const completion = await client.chat.completions.create({
+    const body: any = {
       model: room.model_config?.model || 'gpt-4.1',
-      messages: openaiMessages,
-      temperature: room.model_config?.temperature || 1.0,
-      max_completion_tokens: room.model_config?.max_tokens || 1000,
+      input: openaiMessages,
+      max_output_tokens: room.model_config?.max_tokens || 1000,
       top_p: room.model_config?.top_p || 1.0,
-      frequency_penalty: room.model_config?.frequency_penalty || 0,
-      presence_penalty: room.model_config?.presence_penalty || 0,
-    });
+    };
 
-    return completion.choices[0]?.message?.content || 'すみません、応答を生成できませんでした。';
+    if (!isReasoningModel(room.model_config?.model || '')) {
+      body.temperature = room.model_config?.temperature || 1.0;
+    }
+
+    // API呼び出し
+    const resp = await client.responses.create(body);
+
+    return resp.output_text || 'すみません、応答を生成できませんでした。';
   } catch (error) {
     console.error('OpenAI API Error:', error);
     
@@ -132,3 +137,8 @@ export const getAvailableModels = async (client: OpenAI): Promise<string[]> => {
     ];
   }
 };
+
+export const isReasoningModel = (model: ResponsesModel): boolean => {
+  // TODO: 現状、API経由でモデルの種類を判別する方法がないため、モデル名のプレフィックスで判断
+  return model.startsWith('o') || model.startsWith('gpt-5');
+}

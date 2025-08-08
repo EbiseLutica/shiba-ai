@@ -7,15 +7,11 @@ interface ModelConfigFormProps {
   temperature: number;
   maxTokens: number;
   topP: number;
-  frequencyPenalty: number;
-  presencePenalty: number;
   showAdvanced: boolean;
   onSelectedModelChange: (value: string) => void;
   onTemperatureChange: (value: number) => void;
   onMaxTokensChange: (value: number) => void;
   onTopPChange: (value: number) => void;
-  onFrequencyPenaltyChange: (value: number) => void;
-  onPresencePenaltyChange: (value: number) => void;
   onResetAdvanced?: () => void;
 }
 
@@ -91,36 +87,6 @@ const ModelConfigForm: Component<ModelConfigFormProps> = (props) => {
                 step="0.1"
                 value={props.topP}
                 onInput={(e) => props.onTopPChange(parseFloat(e.currentTarget.value))}
-                class="w-full"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Frequency Penalty ({props.frequencyPenalty})
-              </label>
-              <input
-                type="range"
-                min="-2"
-                max="2"
-                step="0.1"
-                value={props.frequencyPenalty}
-                onInput={(e) => props.onFrequencyPenaltyChange(parseFloat(e.currentTarget.value))}
-                class="w-full"
-              />
-            </div>
-
-            <div class="col-span-2">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Presence Penalty ({props.presencePenalty})
-              </label>
-              <input
-                type="range"
-                min="-2"
-                max="2"
-                step="0.1"
-                value={props.presencePenalty}
-                onInput={(e) => props.onPresencePenaltyChange(parseFloat(e.currentTarget.value))}
                 class="w-full"
               />
             </div>

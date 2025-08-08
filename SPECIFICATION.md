@@ -76,8 +76,6 @@ OpenAI APIを用いた、ブラウザで完全動作するキャラクター対�
 - temperature（0.0 - 2.0）
 - max_completion_tokens
 - top_p
-- frequency_penalty
-- presence_penalty
 
 ### 4. データ管理
 
@@ -298,9 +296,7 @@ OpenAI APIを用いた、ブラウザで完全動作するキャラクター対�
     "model": "string",
     "temperature": "number",
     "max_tokens": "number",
-    "top_p": "number",
-    "frequency_penalty": "number",
-    "presence_penalty": "number"
+    "top_p": "number"
   },
   "messages": [
     {
