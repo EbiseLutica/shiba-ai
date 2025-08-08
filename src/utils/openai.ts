@@ -80,10 +80,10 @@ export const generateChatResponse = async (
 
     // API呼び出し
     const completion = await client.chat.completions.create({
-      model: room.model_config?.model || 'gpt-3.5-turbo',
+      model: room.model_config?.model || 'gpt-4.1',
       messages: openaiMessages,
       temperature: room.model_config?.temperature || 1.0,
-      max_tokens: room.model_config?.max_tokens || 1000,
+      max_completion_tokens: room.model_config?.max_tokens || 1000,
       top_p: room.model_config?.top_p || 1.0,
       frequency_penalty: room.model_config?.frequency_penalty || 0,
       presence_penalty: room.model_config?.presence_penalty || 0,

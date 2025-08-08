@@ -74,7 +74,7 @@ OpenAI APIを用いた、ブラウザで完全動作するキャラクター対�
 
 #### 3.3 高度な設定（プロモード時）
 - temperature（0.0 - 2.0）
-- max_tokens
+- max_completion_tokens
 - top_p
 - frequency_penalty
 - presence_penalty
